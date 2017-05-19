@@ -24,4 +24,4 @@ github_username:  mjuenema
 
 # Build settings
 markdown: kramdown
-theme: jekyll-theme-minimal
+theme: jekyll-theme-cayman
