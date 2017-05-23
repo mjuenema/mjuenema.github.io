@@ -2,13 +2,18 @@
     "docs": [
         {
             "location": "/", 
-            "text": "Technical stuff\n\n\nNetworking\n\n\n\n\nInstalling GNS3 on CentOS 7\n\n\nBasic IPv6 on Cisco IOS", 
+            "text": "Technical stuff\n\n\nCloud Computing\n\n\n\n\n'Terraform: Up \n Running' code samples translated\n\n\n\n\nNetworking\n\n\n\n\nInstalling GNS3 on CentOS 7\n\n\nBasic IPv6 on Cisco IOS", 
             "title": "Home"
         }, 
         {
             "location": "/#technical-stuff", 
             "text": "", 
             "title": "Technical stuff"
+        }, 
+        {
+            "location": "/#cloud-computing", 
+            "text": "'Terraform: Up   Running' code samples translated", 
+            "title": "Cloud Computing"
         }, 
         {
             "location": "/#networking", 
