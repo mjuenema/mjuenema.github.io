@@ -2,18 +2,23 @@
     "docs": [
         {
             "location": "/", 
-            "text": "Technical stuff\n\n\nCloud Computing\n\n\n\n\n'Terraform: Up \n Running' code samples translated\n\n\n\n\nNetworking\n\n\n\n\nInstalling GNS3 on CentOS 7\n\n\nBasic IPv6 on Cisco IOS", 
+            "text": "Projects and Notes\n\n\nBelow are a list of notes and projects I have been working on. I use this page mainly \nfor my own reference but other people might find something useful.\n\n\nCloud Computing\n\n\n\n\n'Terraform: Up \n Running' code samples translated\n\n\n\n\nSoftware Development\n\n\n\n\nMy collection of IPython notebooks\n\n\n\n\nNetworking\n\n\n\n\nInstalling GNS3 on CentOS 7\n\n\nBasic IPv6 on Cisco IOS", 
             "title": "Home"
         }, 
         {
-            "location": "/#technical-stuff", 
-            "text": "", 
-            "title": "Technical stuff"
+            "location": "/#projects-and-notes", 
+            "text": "Below are a list of notes and projects I have been working on. I use this page mainly \nfor my own reference but other people might find something useful.", 
+            "title": "Projects and Notes"
         }, 
         {
             "location": "/#cloud-computing", 
             "text": "'Terraform: Up   Running' code samples translated", 
             "title": "Cloud Computing"
+        }, 
+        {
+            "location": "/#software-development", 
+            "text": "My collection of IPython notebooks", 
+            "title": "Software Development"
         }, 
         {
             "location": "/#networking", 
