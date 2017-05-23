@@ -1,3 +1,26 @@
 h1 {
-	font-size: 0.9em;
+	font-size: 1.8em;
+}
+
+h2 {
+	font-size: 1.5em;
+}
+
+h3 {
+	font-size: 1.2em;
+}
+
+ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+.navbar { 
+	background-color: #3d9970;
+}
+
+pre {
+	padding-top: 0;
+	padding-bottom: 0;
 }
