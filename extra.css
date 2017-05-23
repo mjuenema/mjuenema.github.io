@@ -20,7 +20,25 @@ ul {
 	background-color: #3d9970;
 }
 
+div.navbar-collapse ul.nav {
+	display: none;
+}
+
+div.navbar-collapse ul.navbar-right {
+	display: block;
+}
+
+.navbar li {
+	max-width: 230px;
+	overflow: hidden;
+}
+
 pre {
 	padding-top: 0;
 	padding-bottom: 0;
+}
+
+p {
+	line-height: 1.8;
+	margin-top: 1.3em;
 }
