@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Markus J&uuml;nemann">
+        <link rel="canonical" href="https://mjuenema.github.io/basic_ipv6_on_cisco_ios/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Basic IPv6 on Cisco IOS - Markus J&uuml;nemann</title>
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.5.0.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+	
+	<script src="../js/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/highlight.pack.js"></script> 
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="..">Markus J&uuml;nemann</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                    <li >
+                        <a href="..">Home</a>
+                    </li>
+                    <li >
+                        <a href="../installing_gns3_on_centos7/">Installing GNS3 on CentOS 7</a>
+                    </li>
+                    <li class="active">
+                        <a href="./">Basic IPv6 on Cisco IOS</a>
+                    </li>
+                </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                    <li >
+                        <a rel="next" href="../installing_gns3_on_centos7/">
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li class="disabled">
+                        <a rel="prev" >
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/mjuenema">
+                                <i class="fa fa-github"></i>GitHub
+                        </a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+                <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="main active"><a href="#basic-ipv6-on-cisco-ios">Basic IPv6 on Cisco IOS</a></li>
+            <li><a href="#global-settings">Global settings</a></li>
+            <li><a href="#interfaces">Interfaces</a></li>
+            <li><a href="#show-ipv6">Show IPv6 ...</a></li>
+            <li><a href="#ospfv3">OSPFv3</a></li>
+    </ul>
+</div></div>
+                <div class="col-md-9" role="main">
+
+<h1 id="basic-ipv6-on-cisco-ios">Basic IPv6 on Cisco IOS</h1>
+<h2 id="global-settings">Global settings</h2>
+<p>There are a couple of global settings that enable IPv6 on a Cisco router. The example below also shows two host name to IPv6 address mappings.</p>
+<pre><code>ip routing
+ipv6 unicast-routing
+
+ip cef
+ipv6 cef
+
+ipv6 host R1 FDFC:38C4:F0BE:FFFF::1
+ipv6 host R2 FDFC:38C4:F0BE:FFFF::2
+</code></pre>
+
+<h2 id="interfaces">Interfaces</h2>
+<p>The example below shows a dual-stack configuration for an Ethernet interface. 
+<code>FDFC:38C4:F0BE/48</code> is the unique-local address (ULA) prefix registered with 
+the <a href="https://www.sixxs.net/tools/grh/ula/list/">IPv6 ULA (Unique Local Address) RFC4193 Registration List</a>.
+The IPv6 subnet on this interface is <code>...:1::...</code> and the host address is <code>...::1</code>.</p>
+<pre><code># sh run int e1/0
+interface Ethernet1/0
+ ip address 192.168.1.1 255.255.255.0
+ ipv6 address FDFC:38C4:F0BE:1::1/64
+ ipv6 enable
+</code></pre>
+
+<p>The loopback interface is on IPv6 subnet <code>FFFF</code>. Like its IPv4 address, 
+its IPv6 address has a netmask with all bits set (/128).</p>
+<pre><code># sh run int lo0
+interface Loopback0
+ ip address 192.168.255.1 255.255.255.255
+ ipv6 address FDFC:38C4:F0BE:FFFF::1/128
+ ipv6 enable
+</code></pre>
+
+<p>The show ipv6 interface command displays IPv6 information for that interface</p>
+<pre><code># sh ipv6 interface e1/0
+Ethernet1/0 is up, line protocol is up
+  IPv6 is enabled, link-local address is FE80::C801:32FF:FE70:1C
+  Global unicast address(es):
+    FDFC:38C4:F0BE:1::1, subnet is FDFC:38C4:F0BE:1::/64
+  Joined group address(es):
+    FF02::1
+    FF02::2
+    FF02::1:FF00:1
+    FF02::1:FF70:1C
+  MTU is 1500 bytes
+  ICMP error messages limited to one every 100 milliseconds
+  ICMP redirects are enabled
+  ND DAD is enabled, number of DAD attempts: 1
+  ND reachable time is 30000 milliseconds
+  ND advertised reachable time is 0 milliseconds
+  ND advertised retransmit interval is 0 milliseconds
+  ND router advertisements are sent every 200 seconds
+  ND router advertisements live for 1800 seconds
+  Hosts use stateless autoconfig for addresses.
+192.168.1.1/24 (IPv4)
+FDFC:38C4:F0BE:1::1/64 (IPv6 unique-local address; ULA)
+FE80::... (IPv6 link local)
+ff02::1 (All nodes on the local network segment)
+FF02::2 (All routers on the local network segment)
+FF02::1:FF00:1 (Solicited-node multicast address; used for Neighbour-Disovery)
+FF02::1:FF70:1C (???)
+</code></pre>
+
+<h2 id="show-ipv6">Show IPv6 ...</h2>
+<h3 id="neighbor-cache">Neighbor Cache</h3>
+<pre><code># sh ipv6 neighbors [e1/0]
+IPv6 Address                              Age Link-layer Addr State Interface
+FE80::C802:32FF:FE7F:1C                     0 ca02.327f.001c  REACH Et1/0
+FDFC:38C4:F0BE:1::2                         0 ca02.327f.001c  STALE Et1/0
+</code></pre>
+
+<h3 id="routes">Routes</h3>
+<pre><code># sh ipv6 route
+IPv6 Routing Table - 6 entries
+Codes: C - Connected, L - Local, S - Static, R - RIP, B - BGP
+       U - Per-user Static route
+       I1 - ISIS L1, I2 - ISIS L2, IA - ISIS interarea, IS - ISIS summary
+       O - OSPF intra, OI - OSPF inter, OE1 - OSPF ext 1, OE2 - OSPF ext 2
+       ON1 - OSPF NSSA ext 1, ON2 - OSPF NSSA ext 2
+C   FDFC:38C4:F0BE:1::/64 [0/0]
+     via ::, Ethernet1/0
+L   FDFC:38C4:F0BE:1::1/128 [0/0]
+     via ::, Ethernet1/0
+C   FDFC:38C4:F0BE:4::/64 [0/0]
+     via ::, Ethernet1/1
+L   FDFC:38C4:F0BE:4::1/128 [0/0]
+     via ::, Ethernet1/1
+L   FE80::/10 [0/0]
+     via ::, Null0
+L   FF00::/8 [0/0]
+     via ::, Null0
+</code></pre>
+
+<h2 id="ospfv3">OSPFv3</h2>
+<p>OSPFv3 expands on OSPF version 2 to provide support for IPv6 routing prefixes and
+the larger size of IPv6 addresses. In regards to configuring OSPFv3 on Cisco IOS there
+are two key differences to OSPFv2.</p>
+<ul>
+<li>In OSPFv3, a routing process does not need to be explicitly created. Enabling OSPFv3
+  on an interface will cause a routing process, and its associated configuration,
+  to be created. One may still want to customise OSPFv3 parameters that are not
+  interface specific.</li>
+<li>In OSPFv3, each interface must be enabled using commands in interface configuration
+  mode. This feature is different from OSPF version 2, in which interfaces are
+  indirectly enabled using the device configuration mode.</li>
+</ul>
+<p>OSPFv3 can be used for IPv6 and IPv4 as long as separate OSPF processes are used.
+You may want to use OSPFv2 for IPv4 and OSPFv3 only for IPv6. The example below
+configures a single OSPFv3 zone for IPv6 only.</p>
+<p>Enabling OSPFv3 authentication is so simple that there is no reason for not doing so.</p>
+<pre><code># sh run
+interface Ethernet1/0
+  ...
+  ipv6 ospf 1 area 0
+
+ipv6 router ospf 1
+ log-adjacency-changes
+ redistribute connected
+ area 0 authentication ipsec spi 1000 md5 8B800BD784E62C8C8B0A8DEA3451A25E
+</code></pre></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>var base_url = '..';</script>
+        <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
+        <script src="../js/base.js"></script><div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

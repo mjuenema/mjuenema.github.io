@@ -2,7 +2,7 @@
     "docs": [
         {
             "location": "/", 
-            "text": "Technical stuff\n\n\nNetworking\n\n\n\n\nInstalling GNS3 on CentOS 7", 
+            "text": "Technical stuff\n\n\nNetworking\n\n\n\n\nInstalling GNS3 on CentOS 7\n\n\nBasic IPv6 on Cisco IOS", 
             "title": "Home"
         }, 
         {
@@ -12,7 +12,7 @@
         }, 
         {
             "location": "/#networking", 
-            "text": "Installing GNS3 on CentOS 7", 
+            "text": "Installing GNS3 on CentOS 7  Basic IPv6 on Cisco IOS", 
             "title": "Networking"
         }, 
         {
@@ -59,6 +59,46 @@
             "location": "/installing_gns3_on_centos7/#vpcs", 
             "text": "The Virtual PC Simulator (VPCS) can be used in GNS3 to add simple PCs to a network\ntopology. The steps below will install the /usr/local/bin/vpcs from source code.  cd /tmp\nsvn checkout http://svn.code.sf.net/p/vpcs/code/trunk vpcs\ncd vpcs/src\n./mk.sh 64\nsudo install -m 755 vpcs /usr/local/bin  That's all.", 
             "title": "VPCS"
+        }, 
+        {
+            "location": "/basic_ipv6_on_cisco_ios/", 
+            "text": "Basic IPv6 on Cisco IOS\n\n\nGlobal settings\n\n\nThere are a couple of global settings that enable IPv6 on a Cisco router. The example below also shows two host name to IPv6 address mappings.\n\n\nip routing\nipv6 unicast-routing\n\nip cef\nipv6 cef\n\nipv6 host R1 FDFC:38C4:F0BE:FFFF::1\nipv6 host R2 FDFC:38C4:F0BE:FFFF::2\n\n\n\n\nInterfaces\n\n\nThe example below shows a dual-stack configuration for an Ethernet interface. \n\nFDFC:38C4:F0BE/48\n is the unique-local address (ULA) prefix registered with \nthe \nIPv6 ULA (Unique Local Address) RFC4193 Registration List\n.\nThe IPv6 subnet on this interface is \n...:1::...\n and the host address is \n...::1\n.\n\n\n# sh run int e1/0\ninterface Ethernet1/0\n ip address 192.168.1.1 255.255.255.0\n ipv6 address FDFC:38C4:F0BE:1::1/64\n ipv6 enable\n\n\n\n\nThe loopback interface is on IPv6 subnet \nFFFF\n. Like its IPv4 address, \nits IPv6 address has a netmask with all bits set (/128).\n\n\n# sh run int lo0\ninterface Loopback0\n ip address 192.168.255.1 255.255.255.255\n ipv6 address FDFC:38C4:F0BE:FFFF::1/128\n ipv6 enable\n\n\n\n\nThe show ipv6 interface command displays IPv6 information for that interface\n\n\n# sh ipv6 interface e1/0\nEthernet1/0 is up, line protocol is up\n  IPv6 is enabled, link-local address is FE80::C801:32FF:FE70:1C\n  Global unicast address(es):\n    FDFC:38C4:F0BE:1::1, subnet is FDFC:38C4:F0BE:1::/64\n  Joined group address(es):\n    FF02::1\n    FF02::2\n    FF02::1:FF00:1\n    FF02::1:FF70:1C\n  MTU is 1500 bytes\n  ICMP error messages limited to one every 100 milliseconds\n  ICMP redirects are enabled\n  ND DAD is enabled, number of DAD attempts: 1\n  ND reachable time is 30000 milliseconds\n  ND advertised reachable time is 0 milliseconds\n  ND advertised retransmit interval is 0 milliseconds\n  ND router advertisements are sent every 200 seconds\n  ND router advertisements live for 1800 seconds\n  Hosts use stateless autoconfig for addresses.\n192.168.1.1/24 (IPv4)\nFDFC:38C4:F0BE:1::1/64 (IPv6 unique-local address; ULA)\nFE80::... (IPv6 link local)\nff02::1 (All nodes on the local network segment)\nFF02::2 (All routers on the local network segment)\nFF02::1:FF00:1 (Solicited-node multicast address; used for Neighbour-Disovery)\nFF02::1:FF70:1C (???)\n\n\n\n\nShow IPv6 ...\n\n\nNeighbor Cache\n\n\n# sh ipv6 neighbors [e1/0]\nIPv6 Address                              Age Link-layer Addr State Interface\nFE80::C802:32FF:FE7F:1C                     0 ca02.327f.001c  REACH Et1/0\nFDFC:38C4:F0BE:1::2                         0 ca02.327f.001c  STALE Et1/0\n\n\n\n\nRoutes\n\n\n# sh ipv6 route\nIPv6 Routing Table - 6 entries\nCodes: C - Connected, L - Local, S - Static, R - RIP, B - BGP\n       U - Per-user Static route\n       I1 - ISIS L1, I2 - ISIS L2, IA - ISIS interarea, IS - ISIS summary\n       O - OSPF intra, OI - OSPF inter, OE1 - OSPF ext 1, OE2 - OSPF ext 2\n       ON1 - OSPF NSSA ext 1, ON2 - OSPF NSSA ext 2\nC   FDFC:38C4:F0BE:1::/64 [0/0]\n     via ::, Ethernet1/0\nL   FDFC:38C4:F0BE:1::1/128 [0/0]\n     via ::, Ethernet1/0\nC   FDFC:38C4:F0BE:4::/64 [0/0]\n     via ::, Ethernet1/1\nL   FDFC:38C4:F0BE:4::1/128 [0/0]\n     via ::, Ethernet1/1\nL   FE80::/10 [0/0]\n     via ::, Null0\nL   FF00::/8 [0/0]\n     via ::, Null0\n\n\n\n\nOSPFv3\n\n\nOSPFv3 expands on OSPF version 2 to provide support for IPv6 routing prefixes and\nthe larger size of IPv6 addresses. In regards to configuring OSPFv3 on Cisco IOS there\nare two key differences to OSPFv2.\n\n\n\n\nIn OSPFv3, a routing process does not need to be explicitly created. Enabling OSPFv3\n  on an interface will cause a routing process, and its associated configuration,\n  to be created. One may still want to customise OSPFv3 parameters that are not\n  interface specific.\n\n\nIn OSPFv3, each interface must be enabled using commands in interface configuration\n  mode. This feature is different from OSPF version 2, in which interfaces are\n  indirectly enabled using the device configuration mode.\n\n\n\n\nOSPFv3 can be used for IPv6 and IPv4 as long as separate OSPF processes are used.\nYou may want to use OSPFv2 for IPv4 and OSPFv3 only for IPv6. The example below\nconfigures a single OSPFv3 zone for IPv6 only.\n\n\nEnabling OSPFv3 authentication is so simple that there is no reason for not doing so.\n\n\n# sh run\ninterface Ethernet1/0\n  ...\n  ipv6 ospf 1 area 0\n\nipv6 router ospf 1\n log-adjacency-changes\n redistribute connected\n area 0 authentication ipsec spi 1000 md5 8B800BD784E62C8C8B0A8DEA3451A25E", 
+            "title": "Basic IPv6 on Cisco IOS"
+        }, 
+        {
+            "location": "/basic_ipv6_on_cisco_ios/#basic-ipv6-on-cisco-ios", 
+            "text": "", 
+            "title": "Basic IPv6 on Cisco IOS"
+        }, 
+        {
+            "location": "/basic_ipv6_on_cisco_ios/#global-settings", 
+            "text": "There are a couple of global settings that enable IPv6 on a Cisco router. The example below also shows two host name to IPv6 address mappings.  ip routing\nipv6 unicast-routing\n\nip cef\nipv6 cef\n\nipv6 host R1 FDFC:38C4:F0BE:FFFF::1\nipv6 host R2 FDFC:38C4:F0BE:FFFF::2", 
+            "title": "Global settings"
+        }, 
+        {
+            "location": "/basic_ipv6_on_cisco_ios/#interfaces", 
+            "text": "The example below shows a dual-stack configuration for an Ethernet interface.  FDFC:38C4:F0BE/48  is the unique-local address (ULA) prefix registered with \nthe  IPv6 ULA (Unique Local Address) RFC4193 Registration List .\nThe IPv6 subnet on this interface is  ...:1::...  and the host address is  ...::1 .  # sh run int e1/0\ninterface Ethernet1/0\n ip address 192.168.1.1 255.255.255.0\n ipv6 address FDFC:38C4:F0BE:1::1/64\n ipv6 enable  The loopback interface is on IPv6 subnet  FFFF . Like its IPv4 address, \nits IPv6 address has a netmask with all bits set (/128).  # sh run int lo0\ninterface Loopback0\n ip address 192.168.255.1 255.255.255.255\n ipv6 address FDFC:38C4:F0BE:FFFF::1/128\n ipv6 enable  The show ipv6 interface command displays IPv6 information for that interface  # sh ipv6 interface e1/0\nEthernet1/0 is up, line protocol is up\n  IPv6 is enabled, link-local address is FE80::C801:32FF:FE70:1C\n  Global unicast address(es):\n    FDFC:38C4:F0BE:1::1, subnet is FDFC:38C4:F0BE:1::/64\n  Joined group address(es):\n    FF02::1\n    FF02::2\n    FF02::1:FF00:1\n    FF02::1:FF70:1C\n  MTU is 1500 bytes\n  ICMP error messages limited to one every 100 milliseconds\n  ICMP redirects are enabled\n  ND DAD is enabled, number of DAD attempts: 1\n  ND reachable time is 30000 milliseconds\n  ND advertised reachable time is 0 milliseconds\n  ND advertised retransmit interval is 0 milliseconds\n  ND router advertisements are sent every 200 seconds\n  ND router advertisements live for 1800 seconds\n  Hosts use stateless autoconfig for addresses.\n192.168.1.1/24 (IPv4)\nFDFC:38C4:F0BE:1::1/64 (IPv6 unique-local address; ULA)\nFE80::... (IPv6 link local)\nff02::1 (All nodes on the local network segment)\nFF02::2 (All routers on the local network segment)\nFF02::1:FF00:1 (Solicited-node multicast address; used for Neighbour-Disovery)\nFF02::1:FF70:1C (???)", 
+            "title": "Interfaces"
+        }, 
+        {
+            "location": "/basic_ipv6_on_cisco_ios/#show-ipv6", 
+            "text": "", 
+            "title": "Show IPv6 ..."
+        }, 
+        {
+            "location": "/basic_ipv6_on_cisco_ios/#neighbor-cache", 
+            "text": "# sh ipv6 neighbors [e1/0]\nIPv6 Address                              Age Link-layer Addr State Interface\nFE80::C802:32FF:FE7F:1C                     0 ca02.327f.001c  REACH Et1/0\nFDFC:38C4:F0BE:1::2                         0 ca02.327f.001c  STALE Et1/0", 
+            "title": "Neighbor Cache"
+        }, 
+        {
+            "location": "/basic_ipv6_on_cisco_ios/#routes", 
+            "text": "# sh ipv6 route\nIPv6 Routing Table - 6 entries\nCodes: C - Connected, L - Local, S - Static, R - RIP, B - BGP\n       U - Per-user Static route\n       I1 - ISIS L1, I2 - ISIS L2, IA - ISIS interarea, IS - ISIS summary\n       O - OSPF intra, OI - OSPF inter, OE1 - OSPF ext 1, OE2 - OSPF ext 2\n       ON1 - OSPF NSSA ext 1, ON2 - OSPF NSSA ext 2\nC   FDFC:38C4:F0BE:1::/64 [0/0]\n     via ::, Ethernet1/0\nL   FDFC:38C4:F0BE:1::1/128 [0/0]\n     via ::, Ethernet1/0\nC   FDFC:38C4:F0BE:4::/64 [0/0]\n     via ::, Ethernet1/1\nL   FDFC:38C4:F0BE:4::1/128 [0/0]\n     via ::, Ethernet1/1\nL   FE80::/10 [0/0]\n     via ::, Null0\nL   FF00::/8 [0/0]\n     via ::, Null0", 
+            "title": "Routes"
+        }, 
+        {
+            "location": "/basic_ipv6_on_cisco_ios/#ospfv3", 
+            "text": "OSPFv3 expands on OSPF version 2 to provide support for IPv6 routing prefixes and\nthe larger size of IPv6 addresses. In regards to configuring OSPFv3 on Cisco IOS there\nare two key differences to OSPFv2.   In OSPFv3, a routing process does not need to be explicitly created. Enabling OSPFv3\n  on an interface will cause a routing process, and its associated configuration,\n  to be created. One may still want to customise OSPFv3 parameters that are not\n  interface specific.  In OSPFv3, each interface must be enabled using commands in interface configuration\n  mode. This feature is different from OSPF version 2, in which interfaces are\n  indirectly enabled using the device configuration mode.   OSPFv3 can be used for IPv6 and IPv4 as long as separate OSPF processes are used.\nYou may want to use OSPFv2 for IPv4 and OSPFv3 only for IPv6. The example below\nconfigures a single OSPFv3 zone for IPv6 only.  Enabling OSPFv3 authentication is so simple that there is no reason for not doing so.  # sh run\ninterface Ethernet1/0\n  ...\n  ipv6 ospf 1 area 0\n\nipv6 router ospf 1\n log-adjacency-changes\n redistribute connected\n area 0 authentication ipsec spi 1000 md5 8B800BD784E62C8C8B0A8DEA3451A25E", 
+            "title": "OSPFv3"
         }
     ]
 }
