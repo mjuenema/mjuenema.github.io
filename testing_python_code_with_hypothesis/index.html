@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Markus J&uuml;nemann">
+        <link rel="canonical" href="https://mjuenema.github.io/testing_python_code_with_hypothesis/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+
+	<title>Testing Python Code with Hypothesis - Markus J&uuml;nemann</title>
+
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
+        <link href="../css/base.css" rel="stylesheet">
+        <link href="../extra.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="..">Markus J&uuml;nemann</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="..">Home</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../installing_gns3_on_centos7/">Installing GNS3 on CentOS 7</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../basic_ipv6_on_cisco_ios/">Basic IPv6 on Cisco IOS</a>
+                </li>
+            
+            
+            
+                <li class="active">
+                    <a href="./">Testing Python Code with Hypothesis</a>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                <li >
+                    <a rel="next" href="../basic_ipv6_on_cisco_ios/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li class="disabled">
+                    <a rel="prev" >
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="https://github.com/mjuenema">
+                        
+                            <i class="fa fa-github"></i>
+                        
+                        GitHub
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#testing-python-code-with-hypothesis">Testing Python code with Hypothesis</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="testing-python-code-with-hypothesis">Testing Python code with Hypothesis</h1>
+<p>According to its <a href="http://hypothesis.works/">web page</a> "Hypothesis is a new generation
+of tools for automating your
+testing process. It combines human understanding of your problem domain with machine
+intelligence to improve the quality of your testing process while spendingless time
+writing tests." That sounds all nice and fancy but what does this in mean in practice?
+This article provides a quick introduction to Hypothesis, just to whet your appetite.
+The <a href="http://hypothesis.readthedocs.io/en/latest/">official documentation</a>
+provides a more extensive tutorial.</p>
+<p>Hypothesis is available on PyPi and can be easily installed through pip. Hypothesis
+works in conjunction with a Python test suite. My personal preference is 
+<a href="http://pypi.python.org/pypi/nose">Nose</a> but
+others are supported, too.</p>
+<pre><code>$ pip install hypothesis nose
+Collecting hypothesis
+Collecting nose
+  Using cached nose-1.3.7-py2-none-any.whl
+Collecting enum34 (from hypothesis)
+  Using cached enum34-1.1.6-py2-none-any.whl
+Installing collected packages: enum34, hypothesis, nose
+Successfully installed enum34-1.1.6 hypothesis-3.6.1 nose-1.3.7
+</code></pre>
+
+<p>For the purpose of this article I am going to explain how Hypothesis works with a
+simple custom <code>division()</code> function that accepts numbers or strings containing numbers.
+I admit that this example is rather contrived but it serves the purpose of this article
+really well. The first listing implements the test functions with some assistance
+of Nose.</p>
+<pre><code class="python"># example1.py
+from nose.tools import raises
+
+def division(x, y):
+    return float(x) / float(y)
+
+def test_div():
+    &quot;&quot;&quot;Test numbers and strings.&quot;&quot;&quot;
+    assert division(4, 2.0) == division('4', '2.0')
+
+@raises(ZeroDivisionError)
+def test_divzero():
+    &quot;&quot;&quot;Test division by zero.&quot;&quot;&quot;
+    division('4', 0)
+</code></pre>
+
+<p>What is immediately obvious is that only a very limited set of possible arguments to
+<code>division()</code> is tested. Most people can immediately think of additional combinations of
+integers, floats and string representations worth testing.</p>
+<pre><code>$ nosetests example1.py 
+..
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+OK
+</code></pre>
+
+<p>The second example adds tests for numbers from 1 to 10, also as floats and strings.</p>
+<pre><code class="python"># example2.py
+
+from nose.tools import raises
+
+def division(x, y):
+    return float(x) / float(y)
+
+def check_division(x, y):
+    assert division(x, y) == 2.0
+
+def test_div():
+    &quot;&quot;&quot;Test numbers and strings.&quot;&quot;&quot;
+    for i in range(1, 10):
+        yield division, i*2, i
+        yield division, float(i*2), i
+        yield division, i*2, float(i)
+        yield division, float(i*2), float(i)
+        yield division, i*2, str(i)
+        yield division, str(i*2), i
+        # and so forth...
+
+@raises(ZeroDivisionError)
+def test_divzero():
+    &quot;&quot;&quot;Test division by zero.&quot;&quot;&quot;﻿﻿
+    division('4', 0)
+</code></pre>
+
+<p>It covers many more combinations, but is still limited to a tiny subset of possible
+numbers. It also doesn't look very elegant?</p>
+<pre><code>$ nosetests example2.py 
+.......................................................
+----------------------------------------------------------------------
+Ran 55 tests in 0.005s
+OK
+</code></pre>
+
+<p>Like the first example it provides a specific test case for the ZeroDivisionError
+exception. But are there any other special cases? Maybe Hypothesis can find one.</p>
+<p>The key objective of Hypothesis is to generate input data for test functions. And
+it does so very cleverly. Let's rewrite the test and use Hypothesis. Through
+the <code>@given</code> decorator Hypothesis will create a series of integers to the test.</p>
+<pre><code class="python"># example3.py
+
+from nose.tools import raises
+from hypothesis import given
+from hypothesis.strategies import integers
+
+def division(x, y):
+    return float(x) / float(y)
+
+@given(x=integers())
+def test_div(x):
+    &quot;&quot;&quot;Test integers.&quot;&quot;&quot;
+    print x               # show value of x, normally not done!
+    assert division(x*2, x) == 2.0
+
+@raises(ZeroDivisionError)
+def test_divzero():
+    &quot;&quot;&quot;Test division by zero.&quot;&quot;&quot;﻿﻿
+    division('4', 0)
+</code></pre>
+
+<p>Unfortunately the <code>@given(x=integers())</code> line introduces the ZeroDivisionError into
+the test. This was bound to happen as 0 is a valid integer. Note that the output
+clearly shows what input caused the test to fail (<code>Falsifying example: ...</code>) and
+because of the print statement in the code it also shows the different other integer
+values Hypothesis tried.</p>
+<pre><code>$ nosetests example3.py 
+E.
+======================================================================
+ERROR: example3.test_div
+----------------------------------------------------------------------
+Traceback (most recent call last):
+[...]
+ZeroDivisionError: float division by zero
+-------------------- &gt;&gt; begin captured stdout &lt;&lt; ---------------------
+-86
+38698778983165550746815151433416776989
+130775184150007723213375339326718763618
+-149
+-60717049783932157206209978973119425965
+0
+0
+0
+Falsifying example: test_div(x=0)
+0
+--------------------- &gt;&gt; end captured stdout &lt;&lt; ----------------------
+----------------------------------------------------------------------
+Ran 2 tests in 0.011s
+FAILED (errors=1)
+</code></pre>
+
+<p>Quite clearly we have to amend the code to prevent Hypothesis causing the
+ZeroDivisionError exception. The assume function serves this purpose.</p>
+<pre><code class="python"># example4.py
+
+from nose.tools import raises
+from hypothesis import given, assume
+from hypothesis.strategies import integers
+
+def division(x, y):
+    return float(x) / float(y)
+
+@given(x=integers())
+def test_div(x):
+    &quot;&quot;&quot;Test non-zero integers.&quot;&quot;&quot;
+    assume(x &lt;&gt; 0)                      # &lt;-----------
+
+    print x    # show value of x, normally not done!
+    assert division(x*2, x) == 2.0
+
+@raises(ZeroDivisionError)
+def test_divzero():
+    &quot;&quot;&quot;Test division by zero.&quot;&quot;&quot;
+    division('4', 0)
+Now the tests pass.
+
+$ nosetests example4.py 
+..
+----------------------------------------------------------------------
+Ran 2 tests in 0.045s
+OK
+</code></pre>
+
+<p>But what about other numbers than integers? The next example adds floats to the mix.</p>
+<pre><code class="python"># example5.py
+
+﻿from nose.tools import raises
+from hypothesis import given, assume
+from hypothesis.strategies import integers, floats, one_of
+
+def division(x, y):
+    return float(x) / float(y)
+
+@given(one_of(integers(), floats()))       # &lt;-----------
+def test_div(x):
+    &quot;&quot;&quot;Test integers and floats.&quot;&quot;&quot;﻿
+    assume(x &lt;&gt; 0)
+    print x
+    assert division(x*2, x) == 2.0
+
+@raises(ZeroDivisionError)
+def test_divzero():
+    &quot;&quot;&quot;Test division by zero.&quot;&quot;&quot;﻿﻿﻿
+    division('4', 0)
+</code></pre>
+
+<p>Interestingly adding floats causes some trouble with really large values
+like 8.98846567431158e+307 in this example.</p>
+<pre><code>$ nosetests example5.py
+F.
+======================================================================
+FAIL: example5.test_div
+----------------------------------------------------------------------
+Traceback (most recent call last):
+[...]
+    assert division(x*2, x) == 2.0
+AssertionError: 
+-------------------- &gt;&gt; begin captured stdout &lt;&lt; ---------------------
+[...]
+2.38756119474e+307
+8.9873684495e+307
+8.98846567431e+307
+Falsifying example: test_div(x=8.98846567431158e+307)
+8.98846567431e+307
+--------------------- &gt;&gt; end captured stdout &lt;&lt; ----------------------
+----------------------------------------------------------------------
+Ran 2 tests in 0.500s
+FAILED (failures=1)
+</code></pre>
+
+<p>The cause of the failure becomes obvious when one executes the mathematical
+operation in the Python shell.</p>
+<pre><code>&gt;&gt;&gt; 8.98846567431158e+307*2/8.98846567431158e+307 == 2.0
+False
+
+&gt;&gt;&gt; 8.98846567431158e+307*2/8.98846567431158e+307
+inf
+
+&gt;&gt;&gt; 8.98846567431158e+307*2
+inf
+</code></pre>
+
+<p>Hypothesis is really good at finding such corner-cases. Although in this example
+it does not actually break the <code>division()</code> function, few people would have thought
+of this case without the help of Hypothesis. I certainly hadn't.</p>
+<p>I hope this article provided a very brief introduction to Hypothesis and what value
+it adds to testing Python code. Check out the Hypothesis documentation as there
+are many more features.</p>
+<p>I plan to add Hypothesis based testing to my Python projects
+soon but I somehow fear the outcome ;-)</p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../js/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/highlight.pack.js"></script>
+        <script>var base_url = '..';</script>
+        <script data-main="../mkdocs/js/search.js" src="../mkdocs/js/require.js"></script>
+        <script src="../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
