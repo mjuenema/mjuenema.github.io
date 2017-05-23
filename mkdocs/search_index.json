@@ -2,18 +2,63 @@
     "docs": [
         {
             "location": "/", 
-            "text": "Markus Juenemann\n\n\n[] ## Linux Systems\n\n\n[] ## Cloud computing\n\n\n[] ## Programming in Python\n\n\nNetworking\n\n\n\n\ninstalling_gns3_on_centos7", 
+            "text": "Technical stuff\n\n\nNetworking\n\n\n\n\nInstalling GNS3 on CentOS 7", 
             "title": "Home"
         }, 
         {
-            "location": "/#markus-juenemann", 
-            "text": "[] ## Linux Systems  [] ## Cloud computing  [] ## Programming in Python", 
-            "title": "Markus Juenemann"
+            "location": "/#technical-stuff", 
+            "text": "", 
+            "title": "Technical stuff"
         }, 
         {
             "location": "/#networking", 
-            "text": "installing_gns3_on_centos7", 
+            "text": "Installing GNS3 on CentOS 7", 
             "title": "Networking"
+        }, 
+        {
+            "location": "/installing_gns3_on_centos7/", 
+            "text": "Installing GNS3 on CentOS 7\n\n\nGNS3 is a popular network software emulator. It uses the Dynamips emulation software\nto simulate Cisco IOS. The official documentation includes installation guides for\nUbuntu, Debian, Arch Linux, Fedora and OpenSuse. This article explains how to install\nGNS3 on CentOS 7.\n\n\nRequirements\n\n\nGNS3 is written in Python 3, Python 2 is not supported. The Python 3 packages are not\navailable through the CentOS RPM repositories but they are available on EPEL.\nThe steps below add the EPEL repository, install Python 3.4, QT5 and various other\npackages that are either needed or are useful for running GNS3.\n\n\nsudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm\n  sudo yum install python34 python34-devel python34-setuptools python34-tools\n  sudo yum install elfutils-libelf-devel libpcap-devel cmake glibc-static qemu telnet gnome-terminal putty\n  sudo yum install qt5-qtbase qt5-qtbase-devel qt5-qtsvg qt5-qtsvg-devel\n  sudo yum groupinstall Fonts\n  curl https://bootstrap.pypa.io/get-pip.py | sudo python3.4\n\n\nGNS3\n\n\nOnce Python 3.4 has been installed, the latest GNS3 releases are available from PyPi \nand are easily installed through the pip3.4 script.\n\n\nsudo pip3.4 install gns3-server gns3-gui\n\n\nQt5 and Python 3 bindings\n\n\nGNS3 relies on the Python 3 bindings for the QT5 toolkit. These are not available for\nCentOS 7 from any repository and must be installed from source code. This section is\nheavily based on the instructions found at \n\nhttp://robertbasic.com/blog/install-pyqt5-in-python-3-virtual-environment/\n.\n\n\nSIP\n\n\ncd /tmp\n   wget http://sourceforge.net/projects/pyqt/files/sip/sip-4.16.5/sip-4.16.5.tar.gz\n   tar xvfz sip-4.16.5.tar.gz\n   cd sip-4.16.5\n   python3.4 configure.py\n   make\n   sudo make install\n\n\nPyQt5\n\n\nBuilding PyQt5 from source will take a while.\n\n\ncd /tmp\n   wget http://sourceforge.net/projects/pyqt/files/PyQt5/PyQt-5.4/PyQt-gpl-5.4.tar.gz\n   tar xzf PyQt-gpl-5.4.tar.gz\n   cd PyQt-gpl-5.4\n   python3.4 configure.py --qmake /usr/bin/qmake-qt5\n   make\n   sudo make install\n\n\nDynamips\n\n\nDynamips is a Cisco router emulator. It started as a separate project in 2005 but the\nsources are now part of the GNS3 repositories on Github.\n\n\ncd ~\n   git clone https://github.com/GNS3/dynamips.git\n   cd dynamips/\n   mkdir build\n   cd build/\n   cmake .. -DDYNAMIPS_CODE=stable\n   make\n   sudo make install\n\n\nVPCS\n\n\nThe Virtual PC Simulator (VPCS) can be used in GNS3 to add simple PCs to a network\ntopology. The steps below will install the /usr/local/bin/vpcs from source code.\n\n\nsvn checkout http://svn.code.sf.net/p/vpcs/code/trunk vpcs\n   cd vpcs/src\n   ./mk.sh 64\n   sudo install -m 755 vpcs /usr/local/bin\n\n\nThat's all.", 
+            "title": "Installing GNS3 on CentOS 7"
+        }, 
+        {
+            "location": "/installing_gns3_on_centos7/#installing-gns3-on-centos-7", 
+            "text": "GNS3 is a popular network software emulator. It uses the Dynamips emulation software\nto simulate Cisco IOS. The official documentation includes installation guides for\nUbuntu, Debian, Arch Linux, Fedora and OpenSuse. This article explains how to install\nGNS3 on CentOS 7.", 
+            "title": "Installing GNS3 on CentOS 7"
+        }, 
+        {
+            "location": "/installing_gns3_on_centos7/#requirements", 
+            "text": "GNS3 is written in Python 3, Python 2 is not supported. The Python 3 packages are not\navailable through the CentOS RPM repositories but they are available on EPEL.\nThe steps below add the EPEL repository, install Python 3.4, QT5 and various other\npackages that are either needed or are useful for running GNS3.  sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm\n  sudo yum install python34 python34-devel python34-setuptools python34-tools\n  sudo yum install elfutils-libelf-devel libpcap-devel cmake glibc-static qemu telnet gnome-terminal putty\n  sudo yum install qt5-qtbase qt5-qtbase-devel qt5-qtsvg qt5-qtsvg-devel\n  sudo yum groupinstall Fonts\n  curl https://bootstrap.pypa.io/get-pip.py | sudo python3.4", 
+            "title": "Requirements"
+        }, 
+        {
+            "location": "/installing_gns3_on_centos7/#gns3", 
+            "text": "Once Python 3.4 has been installed, the latest GNS3 releases are available from PyPi \nand are easily installed through the pip3.4 script.  sudo pip3.4 install gns3-server gns3-gui", 
+            "title": "GNS3"
+        }, 
+        {
+            "location": "/installing_gns3_on_centos7/#qt5-and-python-3-bindings", 
+            "text": "GNS3 relies on the Python 3 bindings for the QT5 toolkit. These are not available for\nCentOS 7 from any repository and must be installed from source code. This section is\nheavily based on the instructions found at  http://robertbasic.com/blog/install-pyqt5-in-python-3-virtual-environment/ .", 
+            "title": "Qt5 and Python 3 bindings"
+        }, 
+        {
+            "location": "/installing_gns3_on_centos7/#sip", 
+            "text": "cd /tmp\n   wget http://sourceforge.net/projects/pyqt/files/sip/sip-4.16.5/sip-4.16.5.tar.gz\n   tar xvfz sip-4.16.5.tar.gz\n   cd sip-4.16.5\n   python3.4 configure.py\n   make\n   sudo make install", 
+            "title": "SIP"
+        }, 
+        {
+            "location": "/installing_gns3_on_centos7/#pyqt5", 
+            "text": "Building PyQt5 from source will take a while.  cd /tmp\n   wget http://sourceforge.net/projects/pyqt/files/PyQt5/PyQt-5.4/PyQt-gpl-5.4.tar.gz\n   tar xzf PyQt-gpl-5.4.tar.gz\n   cd PyQt-gpl-5.4\n   python3.4 configure.py --qmake /usr/bin/qmake-qt5\n   make\n   sudo make install", 
+            "title": "PyQt5"
+        }, 
+        {
+            "location": "/installing_gns3_on_centos7/#dynamips", 
+            "text": "Dynamips is a Cisco router emulator. It started as a separate project in 2005 but the\nsources are now part of the GNS3 repositories on Github.  cd ~\n   git clone https://github.com/GNS3/dynamips.git\n   cd dynamips/\n   mkdir build\n   cd build/\n   cmake .. -DDYNAMIPS_CODE=stable\n   make\n   sudo make install", 
+            "title": "Dynamips"
+        }, 
+        {
+            "location": "/installing_gns3_on_centos7/#vpcs", 
+            "text": "The Virtual PC Simulator (VPCS) can be used in GNS3 to add simple PCs to a network\ntopology. The steps below will install the /usr/local/bin/vpcs from source code.  svn checkout http://svn.code.sf.net/p/vpcs/code/trunk vpcs\n   cd vpcs/src\n   ./mk.sh 64\n   sudo install -m 755 vpcs /usr/local/bin  That's all.", 
+            "title": "VPCS"
         }
     ]
 }
