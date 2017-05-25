@@ -2,8 +2,13 @@
     "docs": [
         {
             "location": "/", 
-            "text": "Projects and Notes\n\n\nBelow are a list of notes and projects I have been working on. I use this page mainly \nfor my own reference but other people might find something useful.\n\n\nCloud Computing\n\n\n\n\n'Terraform: Up \n Running' code samples translated\n\n\n\n\nSoftware Development\n\n\n\n\nMy collection of IPython notebooks\n\n\nTesting Python Code with Hypothesis\n\n\n\n\nNetworking\n\n\n\n\nInstalling GNS3 on CentOS 7\n\n\nBasic IPv6 on Cisco IOS\n\n\n802.11s Wireless Mesh Network\n\n\n\n\nLinks\n\n\nMy other presence on the Internet.\n\n\n\n\nGithub\n\n\nLinkedIn\n\n\nTravis-CI", 
+            "text": "About Me\n\n\nMy career as an IT Systems, Network and Security Engineer spans over 20 years during\nwhich I have been involved in major projects in Australia and Germany.\n\n\nI have extensive knowledge of Linux/Unix systems as well as IP Networks while at the\nsame time I consider myself a reasonably good Python programmer.\n\n\nCheck out my \nLinkedIn\n profile for\nmore information.\n\n\nProjects and Notes\n\n\nBelow are a list of notes and projects I have been working on. I use this page mainly \nfor my own reference but other people might find something useful.\n\n\nCloud Computing\n\n\n\n\n'Terraform: Up \n Running' code samples translated\n\n\n\n\nSoftware Development\n\n\n\n\nMy collection of Python notebooks\n\n\nTesting Python Code with Hypothesis\n\n\n\n\nNetworking\n\n\n\n\nInstalling GNS3 on CentOS 7\n\n\nBasic IPv6 on Cisco IOS\n\n\n802.11s Wireless Mesh Network", 
             "title": "Home"
+        }, 
+        {
+            "location": "/#about-me", 
+            "text": "My career as an IT Systems, Network and Security Engineer spans over 20 years during\nwhich I have been involved in major projects in Australia and Germany.  I have extensive knowledge of Linux/Unix systems as well as IP Networks while at the\nsame time I consider myself a reasonably good Python programmer.  Check out my  LinkedIn  profile for\nmore information.", 
+            "title": "About Me"
         }, 
         {
             "location": "/#projects-and-notes", 
@@ -17,18 +22,13 @@
         }, 
         {
             "location": "/#software-development", 
-            "text": "My collection of IPython notebooks  Testing Python Code with Hypothesis", 
+            "text": "My collection of Python notebooks  Testing Python Code with Hypothesis", 
             "title": "Software Development"
         }, 
         {
             "location": "/#networking", 
             "text": "Installing GNS3 on CentOS 7  Basic IPv6 on Cisco IOS  802.11s Wireless Mesh Network", 
             "title": "Networking"
-        }, 
-        {
-            "location": "/#links", 
-            "text": "My other presence on the Internet.   Github  LinkedIn  Travis-CI", 
-            "title": "Links"
         }, 
         {
             "location": "/installing_gns3_on_centos7/", 
