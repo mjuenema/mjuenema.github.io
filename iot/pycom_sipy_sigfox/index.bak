@@ -1,0 +1,253 @@
+= Pycom SiPy and Sigfox
+
+Over the last few days I started experimenting with the [Sigfox](https://www.sigfox.com)
+Low Power Wide Area Network (LPWAN). As a LPWAN, Sigfox is aimed at the
+Internet-of-Things (IoT) and trades throughput for long distance communications and
+long battery life.
+
+* Sigfox operates in the [ISM radio band](https://en.wikipedia.org/wiki/ISM_band).
+* The transmission duty cycle is limited to 1% or a maximum of 140 uplink messages
+  per day per device because of regulatory constraints.
+* Data payload per uplink message is 12 bytes (96 bits).
+* Devices send messages to basestations which forward them to the "Sigfox Cloud"
+  for forwarding.
+* Basestations can send up to 4 downlink messages to each device. Downlink messages
+  have a payload of 8 bytes and can only be send if a device polls for them.
+* Sigfox is suitable for devices that require a battery life of several years.
+* There are currently Sigfox networks in 32 countries.
+
+As hardware I decided to buy a [Pycom SiPy](https://www.pycom.io/product/sipy/) 
+micro-controller for the simple reason that it can be programmed with
+[MicroPython](https://micropython.org/). This makes it an ideal platform for
+quick proto-typing. I added the
+[Pycom Expansion Board](https://www.pycom.io/product/expansion-board-2-0/) and 
+the Antenna Kit. Pycom also offer other interesting expansion boards but for
+simply familiarising yourself with the SigFox service those are not needed.
+
+I split this article into several parts.
+
+* [Introduction to Pycom SiPy](introduction_to_sipy)
+* [Sending a Sigfox message](sending_sigfox_message)
+* [Processing Sigfox messages with AWS Lambda](sigfox_aws_lambda)
+* [Building a custom firmware for the SiPy](firmware_upgrade)
+* [Encrypting Sigfox messages](encrypting_sigfox_messages)
+
+== SigFox
+
+[SigFox](https://www.sigfox.com) ([Wikipedia](https://en.wikipedia.org/wiki/Sigfox))
+is a French company that provides an IoT Connectivity Service based on
+the SigFox technology. It partners with other companies to operate LPWAN (Low-Power-WAN)
+networks in currently 32 countries. As a LPWAN protocol SigFox trades throughput for
+low-power consumption and long-battery life. Uplink messages can carry a pay-load of up
+to 12 bytes and there is a limit of at most 140 messages transmissions per day. The
+latter is a regulatory limitation of the 
+[ISM band](https://en.wikipedia.org/wiki/ISM_band) it uses. The official SigFox standard
+doesn't seem to be publicly available but there is an
+[Internet Draft](https://datatracker.ietf.org/doc/draft-zuniga-lpwan-sigfox-system-description/)
+which provides some insights.
+
+== The hardware
+
+I decided to buy a [Pycom SiPy](https://www.pycom.io/product/sipy/) micro-controller for
+the simple reason that it can be programmed with [MicroPython](https://micropython.org/)
+instead of C. This makes it an ideal platform for quick proto-typing. For convenience I
+added the
+[Pycom Expansion Board](https://www.pycom.io/product/expansion-board-2-0/) and,
+of course, the Antenna Kit. Pycom also offer other interesting expansion boards but for
+simply familiarising yourself with the SigFox service those are not needed.
+
+== Connecting to the SiPy
+
+Pinout diagrams for the SiPy and the Expansion Board can be found
+[here](https://docs.pycom.io/pycom_esp32/pycom_esp32/datasheets.html#id10) and
+[here](https://docs.pycom.io/pycom_esp32/pycom_esp32/datasheets.html#id20).
+The SiPy fits into the socket on the Expansion Board. The Expansion Board (and SiPy)
+require between 3.4V and 5.5V which can be supplied through the micro-USB cable.
+It is important to not operate the SiPy without an antenna attached to the SigFox port.
+WiFi and Bluetooth can operate with the internal antenna only.
+
+After connecting the Expansion Board's micro-USB port to the USB port of a Linux
+computer it registers as a USB Serial Device.
+
+```
+$ dmesg
+[1775074.923532] usb 5-2: new full-speed USB device number 3 using ohci-pci
+[1775075.087894] usb 5-2: New USB device found, idVendor=0403, idProduct=6015
+[1775075.087912] usb 5-2: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[1775075.087920] usb 5-2: Product: FT230X Basic UART
+[1775075.087926] usb 5-2: Manufacturer: FTDI
+[1775075.087932] usb 5-2: SerialNumber: DO0039D6
+[1775075.094035] ftdi_sio 5-2:1.0: FTDI USB Serial Device converter detected
+[1775075.094193] usb 5-2: Detected FT-X
+[1775075.098038] usb 5-2: FTDI USB Serial Device converter now attached to ttyUSB2
+
+$ lsusb
+Bus 005 Device 003: ID 0403:6015 Future Technology Devices International, Ltd Bridge(I2C/SPI/UART/FIFO)
+
+$ lsmod | grep ftdi
+ftdi_sio               53248  0
+```
+
+Curiously the SiPy presents the interactive Python shell on the serial console.
+
+```
+$ cat /etc/minirc.sipy 
+pu rtscts           No 
+pu localecho        No
+
+$ sudo minicom --device /dev/ttyUSB2 --baudrate 115200 --noinit sipy
+```
+
+**The Expansion Board features a row of 7 jumpers labeled TX to LED. These
+jumpers can fall off which may have some nasty effects. For example if the TX
+jumper is missing it is not possible to enter input into the Python shell. I lost
+two hours scratching my head until I found the little note in the manual.**
+
+```python
+>>> import sys
+>>> sys.exit()
+PYB: soft reboot
+�MicroPython da7aed5 on 2016-12-06; SiPy with ESP32
+Type "help()" for more information.
+
+>>> os.uname().release
+'0.9.3.b2'
+```
+
+Check out the [official documentation](https://docs.pycom.io/pycom_esp32/index.html)
+for how to connect to WiFi and Bluetooth and learn about all the other Python modules
+that are available.
+
+=== Updating the firmware
+
+According to the
+[official documentation](https://docs.pycom.io/pycom_esp32/pycom_esp32/getstarted.html#firmware-upgrades)
+it is recommended to upgrade the firmware to the latest version. The process
+requires to temporarily connecting Expansion Board pins GND and
+G23 via jumper wire. Also one must install the
+*dialog* and *pyserial* packages before proceeding.
+
+```
+$ sudo dnf install dialog pyserial
+
+$ tar xvfz pycom_update_1.1.1.b2.tar.gz
+$ cd pyupgrade
+$ sudo ./update
+```
+
+**Well, that's the theory. In practice I ran into a
+"Something failed trying to connect to the device." error. The trick is to press
+the Reset button while the update tool says "Connecting to device".**
+
+== Registering the device with SigFox
+
+Before one can send messages through the SigFox network on has to first register the hardware with the local SigFox network provider on
+the [online activation page](https://backend.sigfox.com/activate). 
+Development kits "come with an included subscription to the full SigFox service"
+([Source](http://makers.sigfox.com/getting-started/#register)).
+In my case I had to select *pycom* as the kit provider and [*Thinxtra*](http://www.thinxtra.com/) as
+the SigFox network operator in Australia. Detailed instructions for registering
+the SiPy can be found on the
+[Registering the SiPy with Sigfox](https://docs.pycom.io/pycom_esp32/pycom_esp32/tutorial/includes/sigfox-start.html#sigfox-register)
+page.
+
+```python
+>>> import network, binascii
+>>> sigfox = network.Sigfox(mode=network.Sigfox.SIGFOX,
+...                         rcz=network.Sigfox.RCZ4)   # RCZ4 = Asia-Pacific
+>>> print(binascii.hexlify(sigfox.id()))
+b'012345678'
+>>> print(binascii.hexlify(sigfox.pac()))
+b'0123456789abcdef'
+```
+
+== Sending data through the SigFox network
+
+Sending data through the SigFox network is well described in the manual page
+of the [Sigfox](https://docs.pycom.io/pycom_esp32/library/network.Sigfox.html)
+Python class. The example below sends 3 bytes of payload.
+
+```python
+>>> import socket
+>>> from network import Sigfox
+>>> sigfox = Sigfox(mode=Sigfox.SIGFOX, rcz=Sigfox.RCZ4)
+>>> s = socket.socket(socket.AF_SIGFOX, socket.SOCK_RAW)
+>>> s.setblocking(True)
+>>> s.send(bytes([0,127,255]))
+3
+>>> s.close()
+```
+
+According to the [online map](https://www.sigfox.com/en/coverage) Melbourne should
+have good coverage but my first attempt at sending a message did not show up in
+the web interface. I moved the SiPy into a different room and tried again.
+
+== Optimising the payload encoding
+
+Given the limited payload size of 12 bytes are usually encoded in binary. Engineers
+will try to optimise the way data is encoded to allow more information to be transmitted, and/or
+to minimise transmission duration and increase battery life (the latter aim has to be
+seen in light of the fact that the payload as such accounts only for less than 50% of the overall
+transmission time, the remainder being made up of preamble, sync frame, device ID,
+authentication code and checksum; see the IETF document for details).
+
+The [Getting Started](http://makers.sigfox.com/getting-started/#send-sigfox) page offers one
+example of how to encode several pieces of data. Personally I took that as a challenge to
+optimise even further. The Getting Started example encodes the payload as follows.
+
+* Latitude (4 bytes) - probably encoded as a [single-precision float](https://en.wikipedia.org/wiki/Single-precision_floating-point_format).
+* Longitude 4 bytes) - like Latitude.
+* Battery voltage (1 byte) - no details given, so I assumed 5/255 Volts for a 3.7V battery [lithium polymer battery](https://learn.adafruit.com/li-ion-and-lipoly-batteries/voltages).
+* Sats (1 byte) - presumably the number of satellites used.
+* Acquisition time (1 byte) - no idea how to encode time in a single byte. It's normally not really necessary to
+  include time information in the payload as the receiving SigFox basestation will supply one anyway. More about
+  this later.
+* Speed (1 byte) - no details given, could be any fraction of an assumed maximum speed.
+
+This is a bit of a contrived example as it lacks altitude or direction of movement. So let's try to add those
+two values. Here's my optimised encoding (which unfortunately will cause some problems later!!!)
+
+* Latitude can range from 90 degrees north (90) to 90 degrees south (-90), i.e there's a range of 180 degrees. Four decimal
+  digits provide an accuracy of about 1 metre. Using integers instead of floats one could express latitude as
+  0 to 18000000 where 0 is at the north pole and 18000000 is at the south pole. This can be encoded in 24 bits saving
+  8 bits in comparison to the single-precision float encoding.
+* Similar to latitude, the value for longitude can be encoded as 0 to 3600000 (date-line to date-line) or 25 bits,
+  saving another 7 bits.
+* All batteries only have a [small range within which they operate](https://learn.adafruit.com/li-ion-and-lipoly-batteries/voltages). So any voltage level transmitted in the payload will
+  fall into that range. LiPoly batteries only have a useful range of about 1.2V. Also it is not necessary to measure voltage with high precision
+  so why not encode this in 4 bits where the actual voltage is calulated as 3.0V + x * 0.1V, i.e. 3.0V to 4.5V, and binary 1111 represents any invalid value.
+* Encoding the battery voltage in 4 instead of 8 bits saves 4 bits which can be used to encode the number of GPS satellites used. Single
+  provider GPS modules usually have 12 receivers only anyway so 4 bits are sufficient here. This saved another 8 bits.
+* I am going to use the 1 byte allocated to acquisition time to encode the sub-second fraction of the current time as X*1000/256 of a second.
+  Together with the timestamp added by the SigFox basestation this will provide accurate timing information.
+* As the useful range and precision for speed depends highly on the application I am not going to the change the original specification.
+  The byte value must be interpreted as a fraction of an assumed maximum speed, i.e. X*MAX/256.
+ 
+This encoding gives me an additional 8 (Latitude) + 7 (Longitude) + 8 (Sats) = 23 bits:
+
+* The Direction of movement I am going ot encode in 9 bits as X*359/512 providing an angular resolution of 0.7 degrees.
+* Since GPS have a lower vertical than horizontal accuracy I decided to encode Alitude as X*10000/4096 which offers
+  a vertical accuracy of about 2.4 metres using 12 bits. Admittedly this approach does not cater for locations below
+  sea-level.
+* The remaining two bits are used to distinguish different messages types so I could later decide to send other information.
+
+The Python script below implements the solution I described above. For lack of actual sensors I used dummy values.
+
+```python
+```
+
+== The SigFox Cloud
+
+
+
+
+
+
+
+
+--
+  Markus Juenemann
+  markus@juenemann.net
+
+
+

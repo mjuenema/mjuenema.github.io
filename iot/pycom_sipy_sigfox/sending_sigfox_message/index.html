@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Markus J&uuml;nemann">
+        <link rel="canonical" href="https://mjuenema.github.io/iot/pycom_sipy_sigfox/sending_sigfox_message/">
+        <link rel="shortcut icon" href="../../../img/favicon.ico">
+
+	<title>Pycom SiPy and Sigfox Sending Sigfox message - Markus J&uuml;nemann</title>
+
+        <link href="../../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../../css/highlight.css">
+        <link href="../../../css/base.css" rel="stylesheet">
+        <link href="../../../extra.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../../..">Markus J&uuml;nemann</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../../..">Home</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../../installing_gns3_on_centos7/">Installing GNS3 on CentOS 7</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../../basic_ipv6_on_cisco_ios/">Basic IPv6 on Cisco IOS</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../../testing_python_code_with_hypothesis/">Testing Python Code with Hypothesis</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../../80211s_wireless_mesh/">802.11s Wireless Mesh Network</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../">Pycom SiPy and Sigfox</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../encrypting_sigfox_messages/">Pycom SiPy and Sigfox Encrypting Sigfox messages</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../firmware_upgrade/">Pycom SiPy and Sigfox Firmware Upgrade</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../introduction_to_sipy/">Pycom SiPy and Sigfox Introduction to SiPy</a>
+                </li>
+            
+            
+            
+                <li class="active">
+                    <a href="./">Pycom SiPy and Sigfox Sending Sigfox message</a>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                <li >
+                    <a rel="next" href="../introduction_to_sipy/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li class="disabled">
+                    <a rel="prev" >
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="https://github.com/mjuenema">
+                        
+                            <i class="fa fa-github"></i>
+                        
+                        GitHub
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#sending-a-sigfox-message">Sending a Sigfox message</a></li>
+        
+            <li><a href="#sigfox">Sigfox</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="sending-a-sigfox-message">Sending a Sigfox message</h1>
+<h2 id="sigfox">Sigfox</h2>
+<p><a href="https://www.sigfox.com">SigFox</a> (<a href="https://en.wikipedia.org/wiki/Sigfox">Wikipedia</a>)
+is a French company that provides an IoT Connectivity Service based on
+the SigFox technology. It partners with other companies to operate LPWAN (Low-Power-WAN)
+networks in currently 32 countries. As a LPWAN protocol SigFox trades throughput for
+low-power consumption and long-battery life. Uplink messages can carry a pay-load of up
+to 12 bytes and there is a limit of at most 140 messages transmissions per day. The
+latter is a regulatory limitation of the 
+<a href="https://en.wikipedia.org/wiki/ISM_band">ISM band</a> it uses. The official SigFox standard
+doesn't seem to be publicly available but there is an
+<a href="https://datatracker.ietf.org/doc/draft-zuniga-lpwan-sigfox-system-description/">Internet Draft</a>
+which provides some insights.</p>
+<p>== Registering the device with SigFox</p>
+<p>Before one can send messages through the SigFox network on has to first register the hardware with the local SigFox network provider on
+the <a href="https://backend.sigfox.com/activate">online activation page</a>. 
+Development kits "come with an included subscription to the full SigFox service"
+(<a href="http://makers.sigfox.com/getting-started/#register">Source</a>).
+In my case I had to select <em>pycom</em> as the kit provider and <a href="http://www.thinxtra.com/"><em>Thinxtra</em></a> as
+the SigFox network operator in Australia. Detailed instructions for registering
+the SiPy can be found on the
+<a href="https://docs.pycom.io/pycom_esp32/pycom_esp32/tutorial/includes/sigfox-start.html#sigfox-register">Registering the SiPy with Sigfox</a>
+page.</p>
+<pre><code>&gt;&gt;&gt; import network, binascii
+&gt;&gt;&gt; sigfox = network.Sigfox(mode=network.Sigfox.SIGFOX,
+...                         rcz=network.Sigfox.RCZ4)   # RCZ4 = Asia-Pacific
+&gt;&gt;&gt; print(binascii.hexlify(sigfox.id()))
+b'012345678'
+&gt;&gt;&gt; print(binascii.hexlify(sigfox.pac()))
+b'0123456789abcdef'
+</code></pre>
+
+<p>== Sending a Sigfox message</p>
+<p>Sending data through the SigFox network is well described in the manual page
+of the <a href="https://docs.pycom.io/pycom_esp32/library/network.Sigfox.html">Sigfox</a>
+Python class. The example below sends 3 bytes of payload.</p>
+<pre><code>&gt;&gt;&gt; import socket
+&gt;&gt;&gt; from network import Sigfox
+&gt;&gt;&gt; sigfox = Sigfox(mode=Sigfox.SIGFOX, rcz=Sigfox.RCZ4)
+&gt;&gt;&gt; s = socket.socket(socket.AF_SIGFOX, socket.SOCK_RAW)
+&gt;&gt;&gt; s.setblocking(True)
+&gt;&gt;&gt; s.send(bytes[0,127,255])
+3
+&gt;&gt;&gt; s.close()
+</code></pre>
+
+<p>== The SigFox Backend</p>
+<p>The Sigfox network will receive the message but not do anything with it unless one
+configures a callback. Typically one would forward the message for processing. At
+the moment there are pre-configured templates for Amazon Web Servicess and
+Microsoft Azure as well as the option to create a custom callback.</p>
+<p>PICTURE</p>
+<p>For debugging purposes one can simply create a custom callback that will decode
+the Sigfox message and send the decoded data as an email as shown below.</p>
+<p>PICTURE</p>
+<p>The resulting email body would look like this. Note how the second and third byte
+were interpreted as a 16-bit unsigned integer. The latitude and longitude (of the
+receiving basestation) are always rounded to the nearest integer and are therefore
+of limited use. The timestamp is in Unix epoch, i.e. seconds since 1-Jan-1970 which will
+probably be within 1 or 2 seconds from when the message was originally sent. I didn't
+actually test this!</p>
+<pre><code>Device: 4D1234
+Time: 1498034856
+Duplicate: false
+SNR: 40.54
+Station: 2322
+Data: 007fff
+AvgSnr: 40.89
+Lat: -38.0
+Long: 145.0
+RSSI: -103.00
+SeqNumber: 4
+Value1: 0
+Value2: 32767
+</code></pre></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../../js/highlight.pack.js"></script>
+        <script>var base_url = '../../..';</script>
+        <script data-main="../../../mkdocs/js/search.js" src="../../../mkdocs/js/require.js"></script>
+        <script src="../../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
