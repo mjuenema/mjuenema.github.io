@@ -4,7 +4,7 @@
     
     <url>
      <loc>https://mjuenema.github.io/</loc>
-     <lastmod>2017-05-25</lastmod>
+     <lastmod>2017-08-17</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -12,7 +12,7 @@
     
     <url>
      <loc>https://mjuenema.github.io/installing_gns3_on_centos7/</loc>
-     <lastmod>2017-05-25</lastmod>
+     <lastmod>2017-08-17</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -20,7 +20,7 @@
     
     <url>
      <loc>https://mjuenema.github.io/basic_ipv6_on_cisco_ios/</loc>
-     <lastmod>2017-05-25</lastmod>
+     <lastmod>2017-08-17</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -28,7 +28,7 @@
     
     <url>
      <loc>https://mjuenema.github.io/testing_python_code_with_hypothesis/</loc>
-     <lastmod>2017-05-25</lastmod>
+     <lastmod>2017-08-17</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -36,7 +36,63 @@
     
     <url>
      <loc>https://mjuenema.github.io/80211s_wireless_mesh/</loc>
-     <lastmod>2017-05-25</lastmod>
+     <lastmod>2017-08-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://mjuenema.github.io/iot/pycom_sipy_sigfox/</loc>
+     <lastmod>2017-08-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://mjuenema.github.io/iot/pycom_sipy_sigfox/encrypting_sigfox_messages/</loc>
+     <lastmod>2017-08-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://mjuenema.github.io/iot/pycom_sipy_sigfox/firmware_upgrade/</loc>
+     <lastmod>2017-08-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://mjuenema.github.io/iot/pycom_sipy_sigfox/introduction_to_sipy/</loc>
+     <lastmod>2017-08-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://mjuenema.github.io/iot/pycom_sipy_sigfox/sending_sigfox_message/</loc>
+     <lastmod>2017-08-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://mjuenema.github.io/iot/pycom_sipy_sigfox/sigfox_backend/</loc>
+     <lastmod>2017-08-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://mjuenema.github.io/iot/pycom_sipy_sigfox/sigfox_downlink/</loc>
+     <lastmod>2017-08-17</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
