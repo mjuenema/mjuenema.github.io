@@ -110,6 +110,18 @@
                 </li>
             
             
+            
+                <li >
+                    <a href="../sigfox_backend/">Pycom SiPy and Sigfox Sending Sigfox message</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../sigfox_downlink/">Pycom SiPy and Sigfox Sending Sigfox message</a>
+                </li>
+            
+            
             </ul>
 
             <!-- Search, Navigation and Repo links -->
@@ -124,8 +136,8 @@
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
-                <li class="disabled">
-                    <a rel="prev" >
+                <li >
+                    <a rel="prev" href="../sigfox_backend/">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -152,6 +164,12 @@
         
             <li><a href="#sigfox">Sigfox</a></li>
         
+            <li><a href="#registering-the-device-with-sigfox">Registering the device with Sigfox</a></li>
+        
+            <li><a href="#sending-a-sigfox-message_1">Sending a Sigfox message</a></li>
+        
+            <li><a href="#the-sigfox-backend">The Sigfox Backend</a></li>
+        
     
     </ul>
 </div></div>
@@ -159,27 +177,31 @@
 
 <h1 id="sending-a-sigfox-message">Sending a Sigfox message</h1>
 <h2 id="sigfox">Sigfox</h2>
-<p><a href="https://www.sigfox.com">SigFox</a> (<a href="https://en.wikipedia.org/wiki/Sigfox">Wikipedia</a>)
+<p><a href="https://www.sigfox.com">Sigfox</a> (<a href="https://en.wikipedia.org/wiki/Sigfox">Wikipedia</a>)
 is a French company that provides an IoT Connectivity Service based on
-the SigFox technology. It partners with other companies to operate LPWAN (Low-Power-WAN)
-networks in currently 32 countries. As a LPWAN protocol SigFox trades throughput for
+the Sigfox technology. It partners with other companies to operate LPWAN (Low-Power-WAN)
+networks in currently 32 countries. As a LPWAN protocol Sigfox trades throughput for
 low-power consumption and long-battery life. Uplink messages can carry a pay-load of up
 to 12 bytes and there is a limit of at most 140 messages transmissions per day. The
 latter is a regulatory limitation of the 
-<a href="https://en.wikipedia.org/wiki/ISM_band">ISM band</a> it uses. The official SigFox standard
+<a href="https://en.wikipedia.org/wiki/ISM_band">ISM band</a> it uses. The official Sigfox standard
 doesn't seem to be publicly available but there is an
 <a href="https://datatracker.ietf.org/doc/draft-zuniga-lpwan-sigfox-system-description/">Internet Draft</a>
 which provides some insights.</p>
-<p>== Registering the device with SigFox</p>
-<p>Before one can send messages through the SigFox network on has to first register the hardware with the local SigFox network provider on
+<h2 id="registering-the-device-with-sigfox">Registering the device with Sigfox</h2>
+<p>Before one can send messages through the Sigfox network on has to first register the hardware with the local Sigfox network provider on
 the <a href="https://backend.sigfox.com/activate">online activation page</a>. 
-Development kits "come with an included subscription to the full SigFox service"
+Development kits "come with an included subscription to the full Sigfox service"
 (<a href="http://makers.sigfox.com/getting-started/#register">Source</a>).
 In my case I had to select <em>pycom</em> as the kit provider and <a href="http://www.thinxtra.com/"><em>Thinxtra</em></a> as
-the SigFox network operator in Australia. Detailed instructions for registering
+the Sigfox network operator in Australia.</p>
+<p><img alt="Registering Sigfox Device" src="../sigfox_activation2.png" /></p>
+<p>Detailed instructions for registering
 the SiPy can be found on the
 <a href="https://docs.pycom.io/pycom_esp32/pycom_esp32/tutorial/includes/sigfox-start.html#sigfox-register">Registering the SiPy with Sigfox</a>
 page.</p>
+<p>The Python script below will display the Device ID and PAC which must be entered
+during registration.</p>
 <pre><code>&gt;&gt;&gt; import network, binascii
 &gt;&gt;&gt; sigfox = network.Sigfox(mode=network.Sigfox.SIGFOX,
 ...                         rcz=network.Sigfox.RCZ4)   # RCZ4 = Asia-Pacific
@@ -189,30 +211,32 @@ b'012345678'
 b'0123456789abcdef'
 </code></pre>
 
-<p>== Sending a Sigfox message</p>
-<p>Sending data through the SigFox network is well described in the manual page
+<p><img alt="Registering Sigfox Device" src="../sigfox_activation3.png" /></p>
+<h2 id="sending-a-sigfox-message_1">Sending a Sigfox message</h2>
+<p>Sending data through the Sigfox network is well described in the manual page
 of the <a href="https://docs.pycom.io/pycom_esp32/library/network.Sigfox.html">Sigfox</a>
 Python class. The example below sends 3 bytes of payload.</p>
 <pre><code>&gt;&gt;&gt; import socket
 &gt;&gt;&gt; from network import Sigfox
 &gt;&gt;&gt; sigfox = Sigfox(mode=Sigfox.SIGFOX, rcz=Sigfox.RCZ4)
 &gt;&gt;&gt; s = socket.socket(socket.AF_SIGFOX, socket.SOCK_RAW)
+&gt;&gt;&gt; s.setsockopt(socket.SOL_SIGFOX, socket.SO_RX, False)    # Don't expect downlink msg
 &gt;&gt;&gt; s.setblocking(True)
-&gt;&gt;&gt; s.send(bytes[0,127,255])
+&gt;&gt;&gt; s.send(bytes([0,127,255]))
 3
 &gt;&gt;&gt; s.close()
 </code></pre>
 
-<p>== The SigFox Backend</p>
+<h2 id="the-sigfox-backend">The Sigfox Backend</h2>
 <p>The Sigfox network will receive the message but not do anything with it unless one
 configures a callback. Typically one would forward the message for processing. At
 the moment there are pre-configured templates for Amazon Web Servicess and
 Microsoft Azure as well as the option to create a custom callback.</p>
-<p>PICTURE</p>
+<p><img alt="Sigfox Callbacks" src="../sigfox_callback1.png" /></p>
 <p>For debugging purposes one can simply create a custom callback that will decode
 the Sigfox message and send the decoded data as an email as shown below.</p>
-<p>PICTURE</p>
-<p>The resulting email body would look like this. Note how the second and third byte
+<p><img alt="Sigfox Custom Email Callback" src="../sigfox_custom_email_callback.png" /></p>
+<p>The resulting email body would look like shown below. Note how the second and third byte
 were interpreted as a 16-bit unsigned integer. The latitude and longitude (of the
 receiving basestation) are always rounded to the nearest integer and are therefore
 of limited use. The timestamp is in Unix epoch, i.e. seconds since 1-Jan-1970 which will

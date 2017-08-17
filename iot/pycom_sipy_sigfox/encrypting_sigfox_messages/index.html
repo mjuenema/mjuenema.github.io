@@ -110,6 +110,18 @@
                 </li>
             
             
+            
+                <li >
+                    <a href="../sigfox_backend/">Pycom SiPy and Sigfox Sending Sigfox message</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../sigfox_downlink/">Pycom SiPy and Sigfox Sending Sigfox message</a>
+                </li>
+            
+            
             </ul>
 
             <!-- Search, Navigation and Repo links -->
@@ -150,16 +162,21 @@
     
         <li class="main active"><a href="#encrypting-sigfox-messages">Encrypting Sigfox messages</a></li>
         
+            <li><a href="#aes-and-other-ciphers">AES and other ciphers</a></li>
+        
+            <li><a href="#the-speck-cipher">The Speck Cipher</a></li>
+        
     
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
 
 <h1 id="encrypting-sigfox-messages">Encrypting Sigfox messages</h1>
+<h2 id="aes-and-other-ciphers">AES and other ciphers</h2>
 <p>Encrypting Sigfox messages poses some unique challenges.</p>
 <ul>
-<li>Block ciphers algorithms like <a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard">AES</a>
-  normally operate on data of fixed length. In case of AES this is 128 bits which
+<li>Block ciphers algorithms like <a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard">AES</a> 
+  normally operate on data of fixed length. In case of AES this is 128 bits which 
   is larger than the 96 bits payload of Sigfox.</li>
 <li>Block Ciphers can be operated in stream mode but require an "initialisation vector"
   (IV) which must also be transmitted. The IV, at least in the case of AES, must
@@ -170,26 +187,39 @@
 <p>There is a whole new research domain of Lightweigth Cryptography for the
 Internet of Things. The <a href="http://www.ecrypt.eu.org/stream/">eSTREAM</a> project
 resulted in a suite of ciphers aimed at resource constrained environments.</p>
-<p>Another very interesting candidate is the
+<h2 id="the-speck-cipher">The Speck Cipher</h2>
+<p>A very interesting candidate is the
 <a href="https://en.wikipedia.org/wiki/Speck_(cipher)">Speck cipher</a>. What makes this cipher
 so appealing to Sigfox is that it offers small and variable length block sizes
 of 32, 48, 64 and 96 bits. Calvin McCoy implemented
 <a href="https://github.com/inmcm/Simon_Speck_Ciphers">Speck in Python</a> which I used
 for encrypting Sigfox messages on the Pycom Sipy. The example below encodes and encrypts
-GPS latitude and longitude and sends it as a Sigfox message.</p>
+GPS latitude and longitude as two 32 bit floats.</p>
 <pre><code class="python">import struct
 import speck    # https://github.com/inmcm/Simon_Speck_Ciphers/tree/master/Python
 
-latitude =
-longitude =
-packed = struct.pack(&quot;ff&quot;, latitude, longitude)     # 64 bits block
+latitude = -37.12345
+longitude = 145.12345
+packed = struct.pack(&quot;&gt;ff&quot;, latitude, longitude)    # 64 bits block
 
 cipherkey = 'notverysecurekey'                      # 128 bits key
 cipher = speck.SpeckCipher(cipherkey, key_size=128, block_size=64)
 encrypted = cipher.encrypt(packed)
+</code></pre>
 
-TODO
-</code></pre></div>
+<p>One concern of the above approach may be that two messages will be encrypted
+identically if they contain the same latitude and longitude. Adding 32 random
+bits will remedy this concern.</p>
+<pre><code>from crypto import getrandbits
+packed = struct.pack(&quot;&gt;ffI&quot;, latitude, longitude, getrandbits(32))
+cipher = speck.SpeckCipher(cipherkey, key_size=128, block_size=96)
+encrypted = cipher.encrypt(packed)
+</code></pre>
+
+<p>There is a final note to encrypting Sigfox messages. The Sigfox backend callback
+won't be able to interpret the - now encrypted - message payload anymore! The
+<code>{data}</code> field can only be forwarded unchanged and decrypted by some other
+mechanism, e.g. a custom AWS Lambda function.</p></div>
         </div>
 
         <footer class="col-md-12">

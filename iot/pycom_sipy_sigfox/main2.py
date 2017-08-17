@@ -55,7 +55,9 @@ from pycom import heartbeat, rgbled
 import ujson
 import ustruct
 import ure
+import ubinascii
 import socket
+import time
 from machine import Pin, UART, deepsleep
 from network import Sigfox
 from speckcipher import SpeckCipher
@@ -69,7 +71,7 @@ STATE_FILE = '/flash/state.json'
 
 SIGFOX_RCZ = Sigfox.RCZ4    # Australia!!!
 
-CIPHER_KEY = 'notverysecurekey'
+CIPHER_KEY = 0x37c8b9525d442bcfc212d2e0b37ca25c
 
 
 # 1) Turn LED on and heartbeat off.
@@ -82,12 +84,12 @@ rgbled(0x999999)
 #
 gps_standby_pin = Pin(GPS_STANDBY_PIN)
 gps_standby_pin(1)
+time.sleep(5)
 
 
 # 3) Try to read GGA sentence from GPS
 #
 gps_uart = UART(1, baudrate=GPS_BAUD, timeout_chars=1000, pins=(GPS_TX_PIN, GPS_RX_PIN))
-micropy_gps = MicropyGPS(location_formatting='dd')
 
 latitude = 0.0
 longitude = 0.0
@@ -95,27 +97,31 @@ longitude = 0.0
 # Try five times to read a GGA sentence.
 for n in range(0,5):
     gps_line = gps_uart.readline()
-    if gps_line startswith('$GPGGA'):
+    print(gps_line)
+    if gps_line and gps_line.startswith('$GPGGA'):
 
         # Parse GGA NMEA string
-        gps_fields = gps_line.split(',')
+        gps_fields = gps_line.decode('ascii').split(',')
+        print(gps_fields)
         gps_latitude = gps_fields[2]
-        gps_latitude_dir = gps_field[3]
+        gps_latitude_dir = gps_fields[3]
         gps_longitude = gps_fields[4]
-        gps_longitude_dir = gps_field[5]
-        gps_quality = gps_field[6]
+        gps_longitude_dir = gps_fields[5]
+        gps_quality = gps_fields[6]
 
-        if gps_quality <> '0':
+        if gps_quality != '0':
             # Convert latitude/longitude from brain-dead NMEA format to decimal.
-            m = ure.('(\d+)(\d\d)\.(\d+)', gps_latitude)
+            m = ure.match('(\d+)(\d\d)\.(\d+)', gps_latitude)
             latitude = int(m.group(1)) + float('0.' + m.group(2) + m.group(3))*100/60
             if gps_latitude_dir == 'S':
                 latitude = -latitude
+            print(latitude)
 
-            m = ure.('(\d+)(\d\d)\.(\d+)', gps_longitude)
+            m = ure.match('(\d+)(\d\d)\.(\d+)', gps_longitude)
             longitude = int(m.group(1)) + float('0.' + m.group(2) + m.group(3))*100/60
             if gps_longitude_dir == 'W':
                 longitude = -longitude
+            print(longitude)
 
             break
 
@@ -138,6 +144,7 @@ try:
     with open(STATE_FILE, 'r') as fp:
         try:
             state = ujson.load(fp)
+            print(state)
             previous_latitude = state['latitude']
             previous_longitude = state['longitude']
         except (ValueError, KeyError):
@@ -151,7 +158,7 @@ except OSError:
 from network import Sigfox
 import socket
 
-sigfox = Sigfox(mode=Sigfox.SIGFOX, rcz=SIGFOX_RCZ)
+sigfox = Sigfox(mode=Sigfox.SIGFOX, rcz=Sigfox.RCZ4)
 sock = socket.socket(socket.AF_SIGFOX, socket.SOCK_RAW)
 sock.setblocking(True)
 sock.setsockopt(socket.SOL_SIGFOX, socket.SO_RX, False)
@@ -160,22 +167,25 @@ sock.setsockopt(socket.SOL_SIGFOX, socket.SO_RX, False)
 #
 if latitude == 0.0 or longitude == 0.0:
     sock.setsockopt(socket.SOL_SIGFOX, socket.SO_BIT, False)
-    sock.send('')
+    print(sock.send(''))
 
 # b) Location did not change significantly (4 decimal digits equal approx 10 metres)
 #
 elif (abs(latitude-previous_latitude) < 0.0001 and
       abs(longitude-previous_longitude) < 0.0001):
     sock.setsockopt(socket.SOL_SIGFOX, socket.SO_BIT, True)
-    sock.send('')
+    print(sock.send(''))
 
 # c) Encode coordinates as two 32 bit floats, encrypt and send.
+#    This Speck cipher implementation only operates on integers, thus
+#    the conversions.
 #
 else:
-    bits = ustruct.pack('>ff', latitude, longitude)
-    cipher = SpeckSipher(key=CIPHER_KEY, key_size=128, block_size=64)
-    message = cipher.encrypt(bits)
-    sock.send(message)
+    packed = ustruct.pack('>ff', latitude, longitude)
+    cipher = SpeckCipher(key=CIPHER_KEY, key_size=128, block_size=64)
+    message = cipher.encrypt(int.from_bytes(packed, 'big'))
+    print(message)
+    print(sock.send(message.to_bytes(8, 'big')))
 
 sock.close()
 
@@ -196,6 +206,3 @@ rgbled(0x000000)
 #    after which it will reset.
 #
 ##deepsleep(1000*60*15)
-import time
-time.sleep(900)
-

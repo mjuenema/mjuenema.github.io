@@ -110,6 +110,18 @@
                 </li>
             
             
+            
+                <li >
+                    <a href="sigfox_backend/">Pycom SiPy and Sigfox Sending Sigfox message</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="sigfox_downlink/">Pycom SiPy and Sigfox Sending Sigfox message</a>
+                </li>
+            
+            
             </ul>
 
             <!-- Search, Navigation and Repo links -->
@@ -148,41 +160,54 @@
             <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
+        <li class="main active"><a href="#pycom-sipy-and-sigfox">Pycom SiPy and Sigfox</a></li>
+        
+            <li><a href="#sigfox">Sigfox</a></li>
+        
+            <li><a href="#pycom-sipy">Pycom SiPy</a></li>
+        
+    
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
 
-<p>= Pycom SiPy and Sigfox</p>
+<h1 id="pycom-sipy-and-sigfox">Pycom SiPy and Sigfox</h1>
+<h2 id="sigfox">Sigfox</h2>
 <p>Over the last few days I started experimenting with the <a href="https://www.sigfox.com">Sigfox</a>
 Low Power Wide Area Network (LPWAN). As a LPWAN, Sigfox is aimed at the
 Internet-of-Things (IoT) and trades throughput for long distance communications and
 long battery life.</p>
-<ul>
-<li>Sigfox operates in the <a href="https://en.wikipedia.org/wiki/ISM_band">ISM radio band</a>.</li>
-<li>The transmission duty cycle is limited to 1% or a maximum of 140 uplink messages
-  per day per device because of regulatory constraints.</li>
-<li>Data payload per uplink message is 12 bytes (96 bits).</li>
-<li>Devices send messages to basestations which forward them to the "Sigfox Cloud"
-  for forwarding.</li>
-<li>Basestations can send up to 4 downlink messages to each device. Downlink messages
-  have a payload of 8 bytes and can only be send if a device polls for them.</li>
-<li>Sigfox is suitable for devices that require a battery life of several years.</li>
-<li>There are currently Sigfox networks in 32 countries.</li>
-</ul>
+<p>Sigfox operates in the <a href="https://en.wikipedia.org/wiki/ISM_band">ISM radio band</a>.
+Because of ISM band regulations the transmission duty cycle is limited to 1% equalling
+at most 140 messages per day per device. Most applications will probably send a lot 
+fewer messages per day in order to save power.</p>
+<p>The payload of Sigfox message is 96 bits
+(12 bytes) for the uplink and 64 bits (8 bytes) for downlink messages but a
+downlink message will only be send if a device polls for one.</p>
+<p>The Sigfox protocol does not define any media access mechanism. A device simply
+transmits each message three times on different frequencies, expecting that
+at least one basestation withing range (which can be
+tens of kilometres away) will receive it successfully.
+The basestation will then forward the message to a Sigfox backend server for
+processing.</p>
+<h2 id="pycom-sipy">Pycom SiPy</h2>
 <p>As hardware I decided to buy a <a href="https://www.pycom.io/product/sipy/">Pycom SiPy</a> 
 micro-controller for the simple reason that it can be programmed with
 <a href="https://micropython.org/">MicroPython</a>. This makes it an ideal platform for
 quick proto-typing. I added the
 <a href="https://www.pycom.io/product/expansion-board-2-0/">Pycom Expansion Board</a> and 
-the Antenna Kit. Pycom also offer other interesting expansion boards but for
+the Antenna Kit.</p>
+<p>Pycom also offer other interesting expansion boards but for
 simply familiarising yourself with the SigFox service those are not needed.</p>
 <p>I split this article into several parts.</p>
 <ul>
 <li><a href="./introduction_to_sipy">Introduction to Pycom SiPy</a></li>
 <li><a href="./sending_sigfox_message">Sending a Sigfox message</a></li>
-<li><a href="./sigfox_aws_lambda">Processing Sigfox messages with AWS Lambda</a></li>
+<li>The Sigfox backend service</li>
+<li>Sigfox downlink messages</li>
 <li><a href="./firmware_upgrade">Building a custom firmware for the SiPy</a></li>
 <li><a href="./encrypting_sigfox_messages">Encrypting Sigfox messages</a></li>
+<li>An example GPS tracker application</li>
 </ul></div>
         </div>
 

@@ -16,7 +16,7 @@ h3 {
 	color: green;
 }
 
-ul {
+ul.nav {
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
@@ -49,3 +49,10 @@ p {
 	margin-top: 1.3em;
 }
 
+img {
+	display: block;
+	padding: 1em;
+	border: 1px solid #ccc;
+	margin-left: auto;
+	margin-right: auto;
+}
