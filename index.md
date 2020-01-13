@@ -1,40 +1,9 @@
-This page is currently undergoing a re-design...
+I am an IT Systems and Network Engineer with almost 25 years of professional experience. This web site hosts a collection of my articles and notes which others may find useful.
 
-*This text will be italic*
-_This will also be italic_
+## Systems
 
-**This text will be bold**
-__This will also be bold__
+## Networking
 
-_You **can** combine them_
+* [Installing GNS 3 on CentOS 7](gns3_centos7) (17-Aug-2019)
 
-
-## Lists
-
-* List item 1
-* List item 2
-
-1. Numbered item 1
-2. Numbered item 2
-
-# Syntax highlighting
-
-```python
-while True:
-   print('Yippeee!!!')
-```
-
-# Tables
-
-First Header | Second Header
------------- | -------------
-Content from cell 1 | Content from cell 2
-Content in the first column | Content in the second column
-
-# Links
-
-[GitHub](http://github.com)
-
-# Images
-
-![GitHub Logo](/images/logo.png)
+## Python
