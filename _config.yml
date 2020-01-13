@@ -3,6 +3,8 @@ title: Markus Juenemann
 description: Articles and Notes
 #url: "https://samanyougarg.com" # the base hostname & protocol for your site
 
+remote_theme: jekyll/minima
+
 ##Additional Pages
 #about: about
 #contact: contact
