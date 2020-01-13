@@ -11,7 +11,7 @@ This web site hosts a collection of my articles and notes which others may find 
 
 ## Networking
 
-* [My first steps with the Batfish Network Configuration Analysis tool](batfish_first_steps)
+* [First steps with the Batfish Network Configuration Analysis tool](batfish_first_steps)
 * [802.11s Wireless Mesh](80211s_wireless_mesh)
 * [Basic IPv6 on Cisco IOS](basic_ipv6_cisco_ios)
 * [Installing GNS 3 on CentOS 7](gns3_centos7)
@@ -31,8 +31,3 @@ This web site hosts a collection of my articles and notes which others may find 
 
 * [Pycom SiPy and Sigfox](pycom_sipy_sigfox)
 * [Python wrapper for the Sigfox backend REST API (Github repository)](https://github.com/mjuenema/python-sigfox-backend-api)
-
-
-
-
-
