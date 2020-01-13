@@ -1,5 +1,3 @@
-# Markus Juenemann
-
 This page is currently undergoing a re-design...
 
 *This text will be italic*
