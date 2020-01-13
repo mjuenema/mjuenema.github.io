@@ -1,5 +1,3 @@
 title: Markus Juenemann
 description: Various articles, notes and links.
-show_downloads: true
-google_analytics:
-remote_theme:  pages-themes/hacker 
+theme: jekyll-theme-slate
