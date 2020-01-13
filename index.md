@@ -9,6 +9,8 @@ This web site hosts a collection of my articles and notes which others may find 
 
 ## Networking
 
-* [Installing GNS 3 on CentOS 7](gns3_centos7) (17-Aug-2017)
+* [802.11s Wireless Mesh](80211s_wireless_mesh)
+* [Basic IPv6 on Cisco IOS](basic_ipv6_cisco_ios)
+* [Installing GNS 3 on CentOS 7](gns3_centos7)
 
 ## Python
