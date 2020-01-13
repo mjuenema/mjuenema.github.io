@@ -1,5 +1,5 @@
 
-$$ Testing Python code with Hypothesis
+# Testing Python code with Hypothesis
 
 According to its [web page](https://pypi.org/project/hypothesis/) "Hypothesis is a new generation of tools for automating your testing process. It combines human understanding of your problem domain with machine intelligence to improve the quality of your testing process while spendingless time writing tests." That sounds all nice and fancy but what does this in mean in practice? This article provides a quick introduction to Hypothesis, just to whet your appetite. The official documentation provides a more extensive tutorial.
 
