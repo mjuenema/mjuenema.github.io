@@ -1,1 +1,25 @@
-remote_theme: jekyll/minima 
+# Site settings
+title: Markus Juenemann
+description: Articles and Notes
+#url: "https://samanyougarg.com" # the base hostname & protocol for your site
+
+##Additional Pages
+#about: about
+#contact: contact
+
+## Google Analytics
+#analytics_id: ""
+
+## Build settings
+#markdown: kramdown
+
+#kramdown:
+#  parse_block_html: true
+
+#plugins:
+#  - jekyll-paginate-v2
+
+
+exclude:
+  - README.md
+  - .travis.yml
