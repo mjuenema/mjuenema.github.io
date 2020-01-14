@@ -9,7 +9,7 @@ This web site hosts a collection of my articles and notes which others may find 
 ## Systems and Cloud
 
 * ['Terraform Up & Running' Code Samples Translated from Amazon Web Services to Google Cloud](https://github.com/mjuenema/Terraform-Up-and-Running-Code-Samples-Translated)
-* [Infrastructure as Python Code](iapyc)
+* [Python-Terrascript: Infrastructure as Python Code](iapyc)
 
 ## Networking
 
