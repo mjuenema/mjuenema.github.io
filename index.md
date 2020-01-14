@@ -1,4 +1,4 @@
-# Home
+# About
 
 I am a IT Systems and Network Engineer with almost 25 years of professional experience and have worked for various companies in Germany and Australia. Check my [Linkedin Profile](https://www.linkedin.com/in/mjuenemann/) for details.
 
