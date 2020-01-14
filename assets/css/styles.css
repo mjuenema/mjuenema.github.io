@@ -2,3 +2,19 @@
 ---
 
 @import "{{ site.theme }}";
+
+.wrapper {
+    width: 1100px;
+}
+
+section {
+    width: 800px;
+    float: right;
+    padding-bottom: 50px;
+}
+
+code, pre {
+    font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+    color: #000;
+    font-size: 13px;
+}
