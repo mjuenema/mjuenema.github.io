@@ -1,11 +1,10 @@
 ## Installing GNS3 on CentOS 7
 
----
 I originally wrote this article in August 2017. I retained the original version but
 would like to make two comments.
+
 1. In my view, [EVE-NG](https://www.eve-ng.net/) would be a better choice than [GNS 3](https://www.gns3.com/]) now.
 2. It would be better to install the Python packages and other software into `~/.local` instead of `/usr/local/`.
----
 
 GNS3 is a popular network software emulator. It uses the Dynamips emulation software to 
 simulate Cisco IOS. The official documentation includes installation guides for Ubuntu, 
