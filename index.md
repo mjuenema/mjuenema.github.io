@@ -27,7 +27,7 @@ This web site hosts a collection of my articles and notes which others may find 
 * [Python-Terrascript (Github repository)](https://github.com/mjuenema/python-terrascript)
 * [Python interface to gpsd's shared memory segment (Github repository)](https://github.com/mjuenema/python-gpsdshm)
 * [Python interface to ntpd's shared memory segment (Github repository)](https://github.com/mjuenema/python-ntpdshm)
-* [Python package for communicating with Trimble GPS Reiceivers (Github repository)](https://github.com/mjuenema/python-TSIP)
+* [Python package for communicating with Trimble GPS Receivers (Github repository)](https://github.com/mjuenema/python-TSIP)
 
 ## Internet of Things (IoT)
 
