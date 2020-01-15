@@ -1,7 +1,5 @@
 # 802.11s Wireless Mesh Network
 
-*This document is work in progress*
-
 ## Overview
 
 Originally the 802.11 WiFi standards defined two modes of operation, 
@@ -318,9 +316,7 @@ them.
 
 ![](80211s_bridged_to_LAN.png)
 
-```
-$ TODO
-```
+>> Sorry, I did not manage to make this work!
 
 ## Links
 
