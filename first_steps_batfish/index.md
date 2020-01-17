@@ -2,8 +2,8 @@
 
 A few months ago I stumbled across the [Batfish network configuration analysis tool](https://www.batfish.org/). 
 I watched some of the videos on the homepage and was completely amazed by what the tool seems to be capable  of. At the 
-same time I was equally frustrated by how complicated even the "basic" examples appeared. It appears that on top of 
-learning Batfish you also have to learn [Pandas](https://pandas.pydata.org/) in order to do anything useful. 
+same time I was equally frustrated by how complicated even the "basic" examples appeared. It seems that on top of 
+learning Batfish one also has to learn [Pandas](https://pandas.pydata.org/) in order to do anything useful. 
 I am familiar with many prominent Python libraries but had never used Pandas before. Maybe I have just missed out
 on something wonderful so far.
 
