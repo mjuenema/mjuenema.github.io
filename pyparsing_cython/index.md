@@ -86,3 +86,95 @@ $ python3 -m profile -s tottime cisco-acl-parser.py output_of_show_access-lists.
 [many more lines]
 ```
 
+Quite clearly most of the work is done in PyParsing's ``pyparsing.py`` module. I was curious how much faster
+one can make PyParsing by simply converting this module into C code and compiling it. For this we need
+the PyParsing source code of the same version that is currently installed, which is 2.4.6 in my environment.
+
+**Note**: Many of the following steps are perfomed ad-hoc, solely for the purpose of this article. These are not
+good examples of how to deploy Python packages!
+
+```
+$ git clone https://github.com/pyparsing/pyparsing.git
+$ pushd pyparsing
+$ git checkout pyparsing_2.4.6
+```
+
+Now one can convert the ``pyparsing/pyparsing.py`` into ``pyparsing.c``, compile the C code into
+a shared libary ``pyparsing.so``, remove the currently installed version of
+PyParsing, and finally copying ``pyparsing.so`` into 
+
+```
+$ cython -o pyparsing.c -3 pyparsing.py
+$ gcc -I$(python3-config --includes) -shared -fPIC -o pyparsing.so pyparsing.c
+
+$ pip uninstall pyparsing
+Uninstalling pyparsing-2.4.6:
+  Would remove:
+    /home/myusername/.virtualenvs/mjuenema.github.io-pyparsing-cython/lib/python3.7/site-packages/pyparsing-2.4.6.dist-info/*
+    /home/myusername/.virtualenvs/mjuenema.github.io-pyparsing-cython/lib/python3.7/site-packages/pyparsing.py
+Proceed (y/n)?  y
+  Successfully uninstalled pyparsing-2.4.6
+  
+$ cp pyparsing.so ~/.virtualenvs/myvenvnamelib/python3.7/site-packages/
+```
+
+This causes some inprovment but it is not even as good as the cPyparsing package.
+
+```
+$ popd
+$ time python3 cisco-acl-parser.py output_of_show_access-lists.txt
+real	5m13.509s
+user	5m6.813s
+sys	0m0.098s
+```
+
+Let's have a closer look. The profiler in the Python Standard Library only support function calls 
+but the [line_profiler](https://github.com/pyutils/line_profiler) can profile down to single lines.
+First we have to remove the compiled version of PyParsing and re-install the plain Python version.
+
+```
+$ rm ~/.virtualenvs/mjuenema.github.io-pyparsing-cython/lib/python3.7/site-packages/pyparsing.so
+$ push pyparsing.git
+$ python setup.py
+$ popd
+```
+
+For using line_profiler one has to "decorate" the functions one wants to profile. I am interested
+in the top five most costly functions in ``pyparsing.py``.
+
+* `pyparsing.py:1829(_parseCache)`
+* `pyparsing.py:1641(_parseNoCache)`
+* `pyparsing.py:1774(set)`
+* `pyparsing.py:554(__init__)`
+* `pyparsing.py:946(copy)`
+
+I edited the ``pyparsing.py`` module and decorated each of the five functions or methods, before
+re-installing PyParsing.
+
+```
+$ vi pyparsing.py
+...
+    @profile
+    def _parseCache(self, instring, loc, doActions=True, callPreParse=True):
+        HIT, MISS = 0, 1
+        lookup = (self, instring, loc, callPreParse, doActions
+...
+
+$ python setup.py install
+```
+
+Next the line_profiler package is installed and used to generate and display  a profile ``cisco-acl-parser.py.lprof``. 
+I simply followed the instructions. 
+
+```
+$ kernprof -l cisco-acl-parser.py /tmp/cisco_asa_show_access_lists.txt
+$ python3 -m line_profiler cisco-acl-parser.py.lprof
+
+```
+
+Cython has a neat feature for "annotating" a Python module with information how 
+well in can be converted into C code. The output is this HTML file.
+
+```
+
+```
