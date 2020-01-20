@@ -5,10 +5,10 @@ I remembered the *Building Compilers* class back at [Uni](https://www.thm.de/sit
 Lex/[Bison](https://www.gnu.org/software/bison/) and YACC. 
 
 Fortunately, for many cases there are easier alternatives to Lex/Bison these days, 
-[PyParsing](https://pypi.org/project/pyparsing/) for example which is a Python
->> module is an alternative approach to creating and executing simple grammars, vs. the traditional 
->> lex/yacc approach, or the use of regular expressions. The pyparsing module provides a library of classes that 
->> client code uses to construct the grammar directly in Python code.
+[PyParsing](https://pypi.org/project/pyparsing/) for example which is 
+*is an alternative approach to creating and executing simple grammars, vs. the traditional* 
+*lex/yacc approach, or the use of regular expressions. The pyparsing module provides a library of classes that*
+*client code uses to construct the grammar directly in Python code*.
 
 So how hard could it be? The answer is hard and relatively easy at the same time. I did succeed in writing a grammar
 that was able to parse the approximately 190.000(!) lines of output of the ``show access-lists`` comamnd from a
