@@ -63,6 +63,26 @@ module of the Python Standard Library comes into play.
 
 ```
 $ python3 -m profile -s tottime cisco-acl-parser.py output_of_show_access-lists.txt
+         495751567 function calls (451282293 primitive calls) in 2145.890 seconds
 
+   Ordered by: internal time
+
+         ncalls    tottime  percall  cumtime  percall filename:lineno(function)
+  20691162/191586  318.265    0.000 2116.726    0.011 pyparsing.py:1829(_parseCache)
+  20691263/191588  295.454    0.000 2102.924    0.011 pyparsing.py:1641(_parseNoCache)
+         20691161  112.075    0.000  213.214    0.000 pyparsing.py:1774(set)
+17484173/16909108  104.003    0.000  176.125    0.000 pyparsing.py:554(__init__)
+          8454514   98.786    0.000  250.915    0.000 pyparsing.py:946(copy)
+52151187/52150980   96.953    0.000   96.954    0.000 :0(len)
+         41382323   94.586    0.000  140.350    0.000 pyparsing.py:2583(__hash__)
+         58389393   93.997    0.000   93.997    0.000 :0(isinstance)
+         17484173   91.383    0.000  150.000    0.000 pyparsing.py:545(__new__)
+   2893262/191588   76.041    0.000 2096.279    0.011 pyparsing.py:4032(parseImpl)
+         23376609   69.430    0.000  139.457    0.000 :0(get)
+         20691162   60.683    0.000  195.910    0.000 pyparsing.py:1771(get)
+         14521537   57.346    0.000   75.382    0.000 pyparsing.py:1622(preParse)
+         22331258   48.587    0.000   48.587    0.000 pyparsing.py:304(__init__)
+          4600167   47.808    0.000  110.500    0.000 pyparsing.py:852(__iadd__)
+[many more lines]
 ```
 
