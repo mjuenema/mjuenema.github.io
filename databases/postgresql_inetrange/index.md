@@ -1,6 +1,6 @@
 # `inetrange` type for PostgreSQL
 
-One of my favourite things about PostgreSQL is that it provides the ``inet`` column type for storing 
+One of my favourite things about PostgreSQL is the ``inet`` type for storing 
 [IP Addresses and Networks](https://www.postgresql.org/docs/10/datatype-net-types.html). The ``inet``
 type coms with its own set of operators, like querying whether an IP Address is contained in a Network.
 
