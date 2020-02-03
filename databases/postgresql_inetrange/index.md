@@ -116,4 +116,4 @@ LINE 1: SELECT '192.168.1.1'::inet > ('192.168.1.10', '192.168.1.20'...
 HINT:  No operator matches the given name and argument types. You might need to add explicit type casts.
 ```
 
-
+To save you the effort there is an existing implementation with even more features at https://github.com/RhodiumToad/ip4r.
