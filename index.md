@@ -1,10 +1,9 @@
 # About
 
-I am a IT Systems and Network Engineer with almost 25 years of professional experience and have worked for various companies in Germany and Australia. Check my [Linkedin Profile](https://www.linkedin.com/in/mjuenemann/) for details.
+I am a IT Systems and Network Engineer with 25 years of professional experience and have worked for various companies in Germany and Australia. Check my [Linkedin Profile](https://www.linkedin.com/in/mjuenemann/) for details.
 
 This web site hosts a collection of my articles and notes which others may find useful.
 
-*I am currently in the progress of migrating content and that's why it looks a bit sparse at the moment.*
 
 ## Systems and Cloud
 
@@ -18,6 +17,7 @@ This web site hosts a collection of my articles and notes which others may find 
 * [Basic IPv6 on Cisco IOS](basic_ipv6_cisco_ios)
 * [Installing GNS 3 on CentOS 7](gns3_centos7)
 * [Ansible Filter for generating Cisco Password Hashes (Github repository)](https://github.com/mjuenema/ansible-filter-cisco-hash)
+* [Easiersnmp is a wrapper around easysnmp to make it even easier to use (Github repository)](https://github.com/mjuenema/python-easiersnmp)
 * [Simple SNMP MIB for sending notifications (traps) of generic events](https://github.com/mjuenema/xix-event-mib) and basic [Python bindings](https://github.com/mjuenema/python-xixeventlib)
 
 ## Python
@@ -33,3 +33,7 @@ This web site hosts a collection of my articles and notes which others may find 
 
 * [Pycom SiPy and Sigfox](pycom_sipy_sigfox)
 * [Python wrapper for the Sigfox backend REST API (Github repository)](https://github.com/mjuenema/python-sigfox-backend-api)
+
+## Misc
+
+* [SCX00.py is a Python module for reading and writing data from/to Eaton Power SC200 and SC300 Controllers (Github repository)](https://github.com/mjuenema/python-eaton-scx00)
