@@ -11,10 +11,16 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
     {% include head-custom.html %}
+    <style>
+.custom {
+  max-width: 500px;
+  margin: auto;
+}
+</style>
   </head>
   <body>
     <header class="page-header" role="banner"></header>
-    <main id="content" class="main-content" role="main">{{ content }}</main>
+    <main id="content" class="main-content custom" role="main">{{ content }}</main>
     <footer class="site-footer"></footer>
   </body>
 </html>
