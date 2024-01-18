@@ -1,3 +1,3 @@
 # README
 
-or not README, that's the question.
+or not README, that is the question.
