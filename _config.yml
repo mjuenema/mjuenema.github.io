@@ -1,4 +1,4 @@
 title: Markus Juenemann
-remote_theme: pages-themes/primer@v0.2.0
+remote_theme: pages-themes/primer
 plugins:
 - jekyll-remote-theme
